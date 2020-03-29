@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Alice_Timetable.Engine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Alice_Timetable
 {
@@ -24,6 +26,8 @@ namespace Alice_Timetable
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
+            string connection = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection));
             services.AddControllers();
             services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
         }

@@ -1,9 +1,11 @@
-﻿using Alice_Timetable.Models;
+﻿using Alice_Timetable.Engine;
+using Alice_Timetable.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +17,8 @@ namespace Alice_Timetable.Controllers
     [Route(template: "/")]
     public class MainController : ControllerBase
     {
+        // Нужно сделать очистку
+        private readonly ConcurrentDictionary<string, UserSession> Sessions = new ConcurrentDictionary<string, UserSession>();
         private static readonly JsonSerializerSettings ConverterSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver
@@ -24,12 +28,6 @@ namespace Alice_Timetable.Controllers
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        [HttpGet]
-        public string Get()
-        {
-            return "Test";
-        }
-
         [HttpPost]
         public Task GetUserRequest()
         {
@@ -37,16 +35,10 @@ namespace Alice_Timetable.Controllers
             var body = reader.ReadToEnd();
 
             var aliceRequest = JsonConvert.DeserializeObject<AliceRequest>(body, ConverterSettings);
-            var aliceResponse = new AliceResponse(aliceRequest)
-            {
-                Response = { Text = "Привет!!!" }
-            };
+            var userId = aliceRequest.Session.UserId;
+            var session = Sessions.GetOrAdd(userId, uid => new UserSession(uid));
 
-            using (var sw = new StreamWriter("log.txt", true))
-            {
-                sw.Write("ЗАПИСАЛ");
-            }
-
+            var aliceResponse = session.HandleRequest(aliceRequest); 
             var stringResponse = JsonConvert.SerializeObject(aliceResponse, ConverterSettings);
             return Response.WriteAsync(stringResponse);
         }
