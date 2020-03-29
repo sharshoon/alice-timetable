@@ -13,7 +13,17 @@ namespace Alice_Timetable
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            //CreateHostBuilder(args).Build().Run();
+            StartServer();
+        }
+
+        private static void StartServer()
+        {
+            new WebHostBuilder()
+                .UseKestrel()
+                .UseStartup<Startup>()
+                .Build()
+                .Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

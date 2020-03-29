@@ -39,8 +39,13 @@ namespace Alice_Timetable.Controllers
             var aliceRequest = JsonConvert.DeserializeObject<AliceRequest>(body, ConverterSettings);
             var aliceResponse = new AliceResponse(aliceRequest)
             {
-                Response = { Text = "Привет" }
+                Response = { Text = "Привет!!!" }
             };
+
+            using (var sw = new StreamWriter("log.txt", true))
+            {
+                sw.Write("ЗАПИСАЛ");
+            }
 
             var stringResponse = JsonConvert.SerializeObject(aliceResponse, ConverterSettings);
             return Response.WriteAsync(stringResponse);
