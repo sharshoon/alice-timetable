@@ -1,4 +1,5 @@
-﻿using Alice_Timetable.Engine;
+﻿using Alice_Timetable.Models;
+using Alice_Timetable.Engine;
 using Alice_Timetable.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,11 @@ namespace Alice_Timetable.Controllers
     [Route(template: "/")]
     public class MainController : ControllerBase
     {
+        private IUsersRepository repository;
+        public MainController(IUsersRepository repo)
+        {
+            repository = repo;
+        }
         // Нужно сделать очистку
         private readonly ConcurrentDictionary<string, UserSession> Sessions = new ConcurrentDictionary<string, UserSession>();
         private static readonly JsonSerializerSettings ConverterSettings = new JsonSerializerSettings
@@ -36,7 +42,7 @@ namespace Alice_Timetable.Controllers
 
             var aliceRequest = JsonConvert.DeserializeObject<AliceRequest>(body, ConverterSettings);
             var userId = aliceRequest.Session.UserId;
-            var session = Sessions.GetOrAdd(userId, uid => new UserSession(uid));
+            var session = Sessions.GetOrAdd(userId, uid => new UserSession(uid, repository));
 
             var aliceResponse = session.HandleRequest(aliceRequest); 
             var stringResponse = JsonConvert.SerializeObject(aliceResponse, ConverterSettings);

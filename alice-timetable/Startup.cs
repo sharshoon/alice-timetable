@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Alice_Timetable.Models;
 
 namespace Alice_Timetable
 {
@@ -28,6 +29,7 @@ namespace Alice_Timetable
         {
             string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection));
+            services.AddTransient<IUsersRepository, UsersRepository>();
             services.AddControllers();
             services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
         }

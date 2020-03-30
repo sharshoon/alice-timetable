@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace alice_timetable.Migrations
+namespace Alice_Timetable.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20200329160720_Initial")]

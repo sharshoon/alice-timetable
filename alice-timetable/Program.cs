@@ -15,7 +15,7 @@ namespace Alice_Timetable
     {
         public static void Main(string[] args)
         {
-            StartServer();
+            BuildWebHost(args).Build().Run();
         }
 
         private static void StartServer()
@@ -32,6 +32,13 @@ namespace Alice_Timetable
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                });
+        public static IHostBuilder BuildWebHost(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel();
                 });
     }
 }

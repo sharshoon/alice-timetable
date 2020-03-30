@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace alice_timetable.Migrations
+namespace Alice_Timetable.Migrations
 {
     public partial class Initial : Migration
     {
