@@ -1,6 +1,5 @@
 ﻿using Alice_Timetable.Models;
 using Alice_Timetable.Engine;
-using Alice_Timetable.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Alice_Timetable.Controllers
 {
@@ -24,6 +24,7 @@ namespace Alice_Timetable.Controllers
             repository = repo;
         }
         // Нужно сделать очистку
+
         private readonly ConcurrentDictionary<string, UserSession> Sessions = new ConcurrentDictionary<string, UserSession>();
         private static readonly JsonSerializerSettings ConverterSettings = new JsonSerializerSettings
         {
@@ -33,6 +34,13 @@ namespace Alice_Timetable.Controllers
             },
             NullValueHandling = NullValueHandling.Ignore
         };
+
+        public async void Get()
+        {
+            var client = new HttpClient();
+            var response = await client.GetStringAsync("https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup=851005");
+            var bsuirResponse = JsonConvert.DeserializeObject<BsuirSheduleResponse>(response);
+        }
 
         [HttpPost]
         public Task GetUserRequest()
