@@ -11,6 +11,5 @@ namespace Alice_Timetable.Models
     {
         [Key]
         public string ID { get; set; }
-        public List<WebHook> WebHooks { get; }
     }
 }
