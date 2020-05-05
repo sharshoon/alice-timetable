@@ -35,11 +35,12 @@ namespace Alice_Timetable.Controllers
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        public async void Get()
+        public async Task GetSchedule()
         {
             var client = new HttpClient();
             var response = await client.GetStringAsync("https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup=851005");
-            var bsuirResponse = JsonConvert.DeserializeObject<BsuirSheduleResponse>(response);
+            var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(response);
+
         }
 
         [HttpPost]
@@ -54,6 +55,7 @@ namespace Alice_Timetable.Controllers
 
             var aliceResponse = session.HandleRequest(aliceRequest); 
             var stringResponse = JsonConvert.SerializeObject(aliceResponse, ConverterSettings);
+
             return Response.WriteAsync(stringResponse);
         }
     }

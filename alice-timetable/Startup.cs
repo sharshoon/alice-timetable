@@ -28,7 +28,7 @@ namespace Alice_Timetable
         public void ConfigureServices(IServiceCollection services)
         {
             string connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection, x => x.MigrationsAssembly("Alice_Timetable")));
             services.AddTransient<IUsersRepository, UsersRepository>();
             services.AddControllers();
             services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });

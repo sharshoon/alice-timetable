@@ -4,14 +4,16 @@ using Alice_Timetable.Engine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Alice_Timetable.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20200505162452_fixRank")]
+    partial class fixRank
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +30,6 @@ namespace Alice_Timetable.Migrations
 
                     b.Property<int?>("ScheduleId")
                         .HasColumnType("int");
-
-                    b.Property<string>("academicDepartment")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("calendarId")
                         .HasColumnType("nvarchar(max)");
@@ -119,16 +118,10 @@ namespace Alice_Timetable.Migrations
                     b.Property<int?>("SimplifiedScheduleId1")
                         .HasColumnType("int");
 
-                    b.Property<string>("auditory")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("endLessonTime")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("gradebookLesson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("gradebookLessonlist")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("lessonTime")
@@ -146,19 +139,7 @@ namespace Alice_Timetable.Migrations
                     b.Property<string>("startLessonTime")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("studentGroup")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("studentGroupInformation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("studentGroupModelList")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("subject")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("weekNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("zaoch")
@@ -218,6 +199,71 @@ namespace Alice_Timetable.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("alice_timetable.Models.EntityInt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Item")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ScheduleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduleId");
+
+                    b.ToTable("EntityInt");
+                });
+
+            modelBuilder.Entity("alice_timetable.Models.EntityString", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("Employeeid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Item")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ScheduleId1")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ScheduleId2")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ScheduleId3")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ScheduleId4")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Employeeid");
+
+                    b.HasIndex("ScheduleId");
+
+                    b.HasIndex("ScheduleId1");
+
+                    b.HasIndex("ScheduleId2");
+
+                    b.HasIndex("ScheduleId3");
+
+                    b.HasIndex("ScheduleId4");
+
+                    b.ToTable("EntityString");
                 });
 
             modelBuilder.Entity("alice_timetable.Models.SimplifiedSchedule", b =>
@@ -296,6 +342,40 @@ namespace Alice_Timetable.Migrations
                     b.HasOne("alice_timetable.Models.SimplifiedSchedule", null)
                         .WithMany("tomorrowSchedules")
                         .HasForeignKey("SimplifiedScheduleId1");
+                });
+
+            modelBuilder.Entity("alice_timetable.Models.EntityInt", b =>
+                {
+                    b.HasOne("Alice_Timetable.Models.Schedules.Schedule", null)
+                        .WithMany("weekNumber")
+                        .HasForeignKey("ScheduleId");
+                });
+
+            modelBuilder.Entity("alice_timetable.Models.EntityString", b =>
+                {
+                    b.HasOne("Alice_Timetable.Models.Employee", null)
+                        .WithMany("academicDepartment")
+                        .HasForeignKey("Employeeid");
+
+                    b.HasOne("Alice_Timetable.Models.Schedules.Schedule", null)
+                        .WithMany("auditory")
+                        .HasForeignKey("ScheduleId");
+
+                    b.HasOne("Alice_Timetable.Models.Schedules.Schedule", null)
+                        .WithMany("gradebookLessonlist")
+                        .HasForeignKey("ScheduleId1");
+
+                    b.HasOne("Alice_Timetable.Models.Schedules.Schedule", null)
+                        .WithMany("studentGroup")
+                        .HasForeignKey("ScheduleId2");
+
+                    b.HasOne("Alice_Timetable.Models.Schedules.Schedule", null)
+                        .WithMany("studentGroupInformation")
+                        .HasForeignKey("ScheduleId3");
+
+                    b.HasOne("Alice_Timetable.Models.Schedules.Schedule", null)
+                        .WithMany("studentGroupModelList")
+                        .HasForeignKey("ScheduleId4");
                 });
 
             modelBuilder.Entity("alice_timetable.Models.SimplifiedSchedule", b =>
