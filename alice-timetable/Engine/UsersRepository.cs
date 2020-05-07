@@ -27,7 +27,7 @@ namespace Alice_Timetable.Engine
             return dbEntry;
         }
 
-        public void CreateOrSaveUser(out User user, string userID)
+        public User CreateOrSaveUser(User user, string userID)
         {
             var dbEntry = context.Users.FirstOrDefault(u => u.ID == userID);
 
@@ -41,17 +41,15 @@ namespace Alice_Timetable.Engine
             }
             else
             {
+                dbEntry.Name = dbEntry.Name != user.Name ? user.Name : dbEntry.Name;
+                dbEntry.Group = dbEntry.Group != user.Group ? user.Group : dbEntry.Group;
+
                 user = context.Users.Update(dbEntry).Entity;
-                Console.WriteLine($"Обратился пользователь {dbEntry.ID}");
+                Console.WriteLine($"Обратился пользователь {user.ID}, имя - {user.Name}, группа - {user.Group}");
             }
 
             context.SaveChanges();
-        }
-
-        public void UpdateUser(User user)
-        {
-            context.Users.Update(user);
-            context.SaveChanges();
+            return user;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Alice_Timetable.Engine
 {
     public class State
     {
-        public User User { get; set; }
+        public User User { get; set; } = new User();
         public Step Step { get; set; } = Step.None;
 
     }

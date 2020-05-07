@@ -22,29 +22,29 @@ namespace Alice_Timetable.Engine
             new ModifierUnknown()
         };
         private readonly State _state = new State();
-        public UserSession(string userID, IUsersRepository repo)
-        {
-            repository = repo;
-            User user = new User();
-            repository.CreateOrSaveUser(out user, userID);
-            _state.User = user;
+        //public UserSession(string userID, IUsersRepository repo)
+        //{
+        //    repository = repo;
+        //    User user = new User();
+        //    repository.CreateOrSaveUser(user, userID);
+        //    _state.User = user;
 
-            Console.WriteLine($"Получена сессия пользователя {user.ID}");
-        }
+        //    Console.WriteLine($"Получена сессия пользователя {user.ID}");
+        //}
 
         public UserSession(string userID, IUsersRepository repo, State state)
         {
             repository = repo;
-            User user = new User();
-            repository.CreateOrSaveUser(out user, userID);
-            state.User = user;
-            _state = state;
 
-            Console.WriteLine($"Получена сессия пользователя {user.ID}");
+            Console.WriteLine($"Имя "+state.User.Name);
+            _state.User = repository.CreateOrSaveUser(state.User, userID);
+
+            Console.WriteLine($"Получена сессия пользователя {_state.User.ID}");
         }
 
         internal AliceResponse HandleRequest(AliceRequest aliceRequest, ref State state)
         {
+            _state.Step = state.Step;
             AliceResponse response = null;
             if(!Modifiers.Any(modifier => modifier.Run(aliceRequest, _state, out response)))
             {
@@ -52,8 +52,6 @@ namespace Alice_Timetable.Engine
             }
 
             state = _state;
-            //Нуrepository.UpdateUser(_state.User);
-            //Console.WriteLine("Пользователь обновлен");
 
             return response;
         }
