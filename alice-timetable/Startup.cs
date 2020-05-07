@@ -29,16 +29,14 @@ namespace Alice_Timetable
         {
             string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection, x => x.MigrationsAssembly("Alice_Timetable")));
-            services.AddTransient<IUsersRepository, UsersRepository>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddControllers();
             services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

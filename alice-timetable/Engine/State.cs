@@ -14,7 +14,9 @@ namespace Alice_Timetable.Engine
     }
     public enum Step
     {
-        None, 
+        None,
+        AwaitForName,
+        AwaitForGroup,
         AwaitForTimetable
     }
 }

@@ -11,6 +11,7 @@ namespace Alice_Timetable.Engine
         private DatabaseContext context;
         public UsersRepository(DatabaseContext ctx)
         {
+            Console.WriteLine("Создан User Repository");
             context = ctx;
         }
         public IQueryable<User> Users => context.Users;
@@ -26,22 +27,30 @@ namespace Alice_Timetable.Engine
             return dbEntry;
         }
 
-        public void CreateOrSaveUser(User user, string userID)
+        public void CreateOrSaveUser(out User user, string userID)
         {
-            User dbEntry = context.Users.FirstOrDefault(u => u.ID == userID);
+            var dbEntry = context.Users.FirstOrDefault(u => u.ID == userID);
+
             if (dbEntry == null)
             {
-                user.ID = userID;
-                context.Users.Add(user);
+                dbEntry.ID = userID;
+                context.Users.Add(dbEntry);
+                user = dbEntry;
+
+                Console.WriteLine($"Создан новый пользователь {dbEntry.ID}");
             }
             else
             {
-                if (dbEntry != null)
-                {
-                    dbEntry.ID = userID;
-                    // Потом сюда надо дописать WebHooks, но пока они только для чтения
-                }
+                user = context.Users.Update(dbEntry).Entity;
+                Console.WriteLine($"Обратился пользователь {dbEntry.ID}");
             }
+
+            context.SaveChanges();
+        }
+
+        public void UpdateUser(User user)
+        {
+            context.Users.Update(user);
             context.SaveChanges();
         }
     }

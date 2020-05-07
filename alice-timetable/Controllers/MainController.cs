@@ -22,10 +22,13 @@ namespace Alice_Timetable.Controllers
         public MainController(IUsersRepository repo)
         {
             repository = repo;
+
+            //Console.WriteLine($"Объектов в БД, {repository.Users.Count().ToString()}");
+            //Console.WriteLine($"Добавлено в список, {States.Count.ToString()}");
         }
         // Нужно сделать очистку
 
-        private readonly ConcurrentDictionary<string, UserSession> Sessions = new ConcurrentDictionary<string, UserSession>();
+        private static ConcurrentDictionary<string, State> States = new ConcurrentDictionary<string, State>();
         private static readonly JsonSerializerSettings ConverterSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver
@@ -37,9 +40,9 @@ namespace Alice_Timetable.Controllers
 
         public async Task GetSchedule()
         {
-            var client = new HttpClient();
-            var response = await client.GetStringAsync("https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup=851005");
-            var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(response);
+            //var client = new HttpClient();
+            //var response = await client.GetStringAsync("https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup=851005");
+            //var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(response);
 
         }
 
@@ -48,14 +51,17 @@ namespace Alice_Timetable.Controllers
         {
             using var reader = new StreamReader(Request.Body);
             var body = reader.ReadToEnd();
-
             var aliceRequest = JsonConvert.DeserializeObject<AliceRequest>(body, ConverterSettings);
             var userId = aliceRequest.Session.UserId;
-            var session = Sessions.GetOrAdd(userId, uid => new UserSession(uid, repository));
+            
+            var state = States.GetOrAdd(userId, uid => new State());
+            //Console.WriteLine($"Получен State {state.User.Name}, {state.Step.ToString()}");
 
-            var aliceResponse = session.HandleRequest(aliceRequest); 
+            var session = new UserSession(userId, repository, state);
+            var aliceResponse = session.HandleRequest(aliceRequest, ref state);
+            States.AddOrUpdate(userId,p => state, (p,q) => state);
+
             var stringResponse = JsonConvert.SerializeObject(aliceResponse, ConverterSettings);
-
             return Response.WriteAsync(stringResponse);
         }
     }

@@ -17,7 +17,7 @@ namespace Alice_Timetable.Engine.Modifiers
         {
             return new SimpleResponse()
             {
-                Text = "Привет, в этом навыке ты можешь смотреть раписание БГУИР"
+                Text = "Приветствую, чего желаете?"
             };
         }
     }

@@ -18,6 +18,8 @@ namespace Alice_Timetable.Engine.Modifiers
 
             var keywords = new List<string>
             {
+                "сказать расписание",
+                "скажи расписание",
                 "пока расписание",
                 "какое расписание",
                 "выведи расписание",
@@ -32,7 +34,6 @@ namespace Alice_Timetable.Engine.Modifiers
                 return tokens.All(requestString.ContainsStartWith);
             });
             
-            //return request.Request.Command == "Показать расписание";
         }
 
         protected override SimpleResponse Respond(AliceRequest request, State state)
