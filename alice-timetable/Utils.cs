@@ -11,5 +11,6 @@ namespace alice_timetable
         {
             return list.Any(elem => elem.ToLower().Trim().StartsWith(start));
         }
+
     }
 }

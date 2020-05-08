@@ -19,18 +19,10 @@ namespace Alice_Timetable.Engine
             new ModifierGetGroup(),
             new ModifierEnter(),
             new ModifierSayTimetable(),
+            new ModifierAskTimetableDate(),
             new ModifierUnknown()
         };
         private readonly State _state = new State();
-        //public UserSession(string userID, IUsersRepository repo)
-        //{
-        //    repository = repo;
-        //    User user = new User();
-        //    repository.CreateOrSaveUser(user, userID);
-        //    _state.User = user;
-
-        //    Console.WriteLine($"Получена сессия пользователя {user.ID}");
-        //}
 
         public UserSession(string userID, IUsersRepository repo, State state)
         {

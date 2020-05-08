@@ -41,8 +41,8 @@ namespace Alice_Timetable.Engine
             }
             else
             {
-                dbEntry.Name = dbEntry.Name != user.Name ? user.Name : dbEntry.Name;
-                dbEntry.Group = dbEntry.Group != user.Group ? user.Group : dbEntry.Group;
+                dbEntry.Name = dbEntry.Name != user.Name && !String.IsNullOrEmpty(user.Name) ? user.Name : dbEntry.Name;
+                dbEntry.Group = dbEntry.Group != user.Group  && !String.IsNullOrEmpty(user.Group) ? user.Group : dbEntry.Group;
 
                 user = context.Users.Update(dbEntry).Entity;
                 Console.WriteLine($"Обратился пользователь {user.ID}, имя - {user.Name}, группа - {user.Group}");
