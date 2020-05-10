@@ -1,9 +1,13 @@
-﻿using Alice_Timetable.Engine;
+﻿using alice_timetable.Models;
+using Alice_Timetable.Engine;
 using Alice_Timetable.Engine.Modifiers;
 using Alice_Timetable.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace alice_timetable.Engine.Modifiers
 {
@@ -43,15 +47,33 @@ namespace alice_timetable.Engine.Modifiers
             return DateCheck(requestString);
         }
 
-        protected override SimpleResponse Respond(AliceRequest request, State state)
+        protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
             state.Step = Step.None;
-
-
-            return new SimpleResponse()
+            if (true)
             {
-                Text = Date.ToString()
-            };
+                var response = new SimpleResponse()
+                {
+                    Text = "такое есть в хранилище"
+                };
+                return response;
+            }
+            else
+            {
+                var client = new HttpClient();
+                var bsuirStringResponse = client
+                    .GetStringAsync($"https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup={state.User.Group}")
+                    .Result;
+                var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(bsuirStringResponse);
+
+                bsuirResponse.Group = int.Parse(bsuirResponse.studentGroup.name);
+
+                var response = new SimpleResponse()
+                {
+                    Text = "Такого нет в хранище, но уже добавлено!"
+                };
+                return response;
+            }
         }
         
         private bool DateCheck(IList<string> tokens)

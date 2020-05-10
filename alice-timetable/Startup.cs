@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Alice_Timetable.Models;
 using Alice_Timetable.Controllers;
 using alice_timetable.Engine;
+using alice_timetable.Models;
 
 namespace Alice_Timetable
 {

@@ -4,14 +4,16 @@ using Alice_Timetable.Engine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Alice_Timetable.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20200510164704_DeleteEmployee")]
+    partial class DeleteEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,7 +43,7 @@ namespace Alice_Timetable.Migrations
                     b.Property<string>("sessionStart")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("studentGroupId")
+                    b.Property<int?>("studentGroupid")
                         .HasColumnType("int");
 
                     b.Property<string>("todayDate")
@@ -52,14 +54,14 @@ namespace Alice_Timetable.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("studentGroupId");
+                    b.HasIndex("studentGroupid");
 
                     b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("Alice_Timetable.Models.Employee", b =>
                 {
-                    b.Property<int>("employeeId")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -79,9 +81,6 @@ namespace Alice_Timetable.Migrations
                     b.Property<string>("firstName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("id")
-                        .HasColumnType("int");
-
                     b.Property<string>("lastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -94,7 +93,7 @@ namespace Alice_Timetable.Migrations
                     b.Property<string>("rank")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("employeeId");
+                    b.HasKey("id");
 
                     b.HasIndex("ScheduleId");
 
@@ -220,7 +219,7 @@ namespace Alice_Timetable.Migrations
 
             modelBuilder.Entity("Alice_Timetable.Models.StudentGroup", b =>
                 {
-                    b.Property<int>("studentGroupId")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -237,9 +236,6 @@ namespace Alice_Timetable.Migrations
                     b.Property<string>("facultyName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("id")
-                        .HasColumnType("int");
-
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
 
@@ -249,7 +245,7 @@ namespace Alice_Timetable.Migrations
                     b.Property<string>("specialityName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("studentGroupId");
+                    b.HasKey("id");
 
                     b.ToTable("StudentGroup");
                 });
@@ -274,7 +270,7 @@ namespace Alice_Timetable.Migrations
                 {
                     b.HasOne("Alice_Timetable.Models.StudentGroup", "studentGroup")
                         .WithMany()
-                        .HasForeignKey("studentGroupId");
+                        .HasForeignKey("studentGroupid");
                 });
 
             modelBuilder.Entity("Alice_Timetable.Models.Employee", b =>

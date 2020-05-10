@@ -103,6 +103,10 @@ namespace Alice_Timetable.Engine
                 c => c.ToArray())
                 );
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
         public DbSet<User> Users { get; set; }
         public DbSet<BsuirScheduleResponse> Schedules {get;set;}
     }

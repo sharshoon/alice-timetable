@@ -38,11 +38,9 @@ namespace Alice_Timetable.Controllers
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        public async Task GetSchedule()
+        public string Get()
         {
-            var client = new HttpClient();
-            var response = await client.GetStringAsync("https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup=851005");
-            var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(response);
+            return "Works";
         }
 
         [HttpPost]
@@ -55,7 +53,7 @@ namespace Alice_Timetable.Controllers
 
             // Создаем новую сессию и передаем туда уже имеющуюся/новую информацию
             // о шаге пользователя и его личных данных
-            var session = new UserSession(userId, usersRepository, State);
+            var session = new UserSession(userId, usersRepository, schedulesRepository, State);
             // Выполняем запрос и сохраняем в State обновленные данные и пользователе
             var aliceResponse = session.HandleRequest(aliceRequest, ref State);
 

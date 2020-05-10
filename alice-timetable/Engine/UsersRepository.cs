@@ -33,6 +33,7 @@ namespace Alice_Timetable.Engine
 
             if (dbEntry == null)
             {
+                dbEntry = new User();
                 dbEntry.ID = userID;
                 context.Users.Add(dbEntry);
                 user = dbEntry;

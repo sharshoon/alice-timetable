@@ -1,5 +1,6 @@
 ﻿using alice_timetable.Engine;
 using alice_timetable.Engine.Modifiers;
+using alice_timetable.Models;
 using Alice_Timetable.Engine;
 using Alice_Timetable.Engine.Modifiers;
 using Alice_Timetable.Models;
@@ -41,7 +42,7 @@ namespace Alice_Timetable.Engine
         {
             _state.Step = state.Step;
             AliceResponse response = null;
-            if(!Modifiers.Any(modifier => modifier.Run(aliceRequest, _state, out response)))
+            if(!Modifiers.Any(modifier => modifier.Run(aliceRequest, _state, schedulesRepository,out response)))
             {
                 throw new NotSupportedException("No default modifier");
             }

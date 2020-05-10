@@ -1,4 +1,6 @@
-﻿using Alice_Timetable.Models;
+﻿using alice_timetable.Engine;
+using alice_timetable.Models;
+using Alice_Timetable.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,21 +10,21 @@ namespace Alice_Timetable.Engine.Modifiers
 {
     public abstract class ModifierBase
     {
-        public bool Run(AliceRequest request, State state, out AliceResponse response)
+        public bool Run(AliceRequest request, State state, ISchedulesRepository schedulesRepo ,out AliceResponse response)
         {
             if (!Check(request, state))
             {
                 response = null;
                 return false;
             }
-            response = CreateResponse(request, state);
+            response = CreateResponse(request, schedulesRepo,state);
             return true;
         }
 
-        private AliceResponse CreateResponse(AliceRequest request, State state)
+        private AliceResponse CreateResponse(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
             var response = new AliceResponse(request);
-            var simple = Respond(request, state);
+            var simple = Respond(request, schedulesRepo, state);
 
             response.Response.Text = simple.Text;
             response.Response.Tts = String.IsNullOrEmpty(simple.Tts) ? simple.Text : simple.Tts;
@@ -35,6 +37,6 @@ namespace Alice_Timetable.Engine.Modifiers
         }
 
         protected abstract bool Check(AliceRequest request, State state);
-        protected abstract SimpleResponse Respond(AliceRequest request, State state);
+        protected abstract SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state);
     }
 }

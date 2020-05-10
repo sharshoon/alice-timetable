@@ -1,4 +1,6 @@
 ﻿using alice_timetable;
+using alice_timetable.Engine;
+using alice_timetable.Models;
 using Alice_Timetable.Models;
 using System;
 using System.Collections.Generic;
@@ -36,7 +38,7 @@ namespace Alice_Timetable.Engine.Modifiers
             
         }
 
-        protected override SimpleResponse Respond(AliceRequest request, State state)
+        protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
             state.Step = Step.None;
             return new SimpleResponse()
