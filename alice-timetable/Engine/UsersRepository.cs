@@ -27,7 +27,7 @@ namespace Alice_Timetable.Engine
             return dbEntry;
         }
 
-        public User CreateOrSaveUser(User user, string userID)
+        public User CreateOrUpdateUser(User user, string userID)
         {
             var dbEntry = context.Users.FirstOrDefault(u => u.ID == userID);
 

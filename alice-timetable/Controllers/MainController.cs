@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http;
+using alice_timetable.Models;
+using alice_timetable.Engine;
 
 namespace Alice_Timetable.Controllers
 {
@@ -18,10 +20,12 @@ namespace Alice_Timetable.Controllers
     [Route(template: "/")]
     public class MainController : ControllerBase
     {
-        private IUsersRepository repository;
-        public MainController(IUsersRepository repo)
+        private IUsersRepository usersRepository;
+        private ISchedulesRepository schedulesRepository;
+        public MainController(IUsersRepository usersRepo, ISchedulesRepository schedulesRepo)
         {
-            repository = repo;
+            usersRepository = usersRepo;
+            schedulesRepository = schedulesRepo;
         }
 
         private static State State = new State();
@@ -36,9 +40,9 @@ namespace Alice_Timetable.Controllers
 
         public async Task GetSchedule()
         {
-            //var client = new HttpClient();
-            //var response = await client.GetStringAsync("https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup=851005");
-            //var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(response);
+            var client = new HttpClient();
+            var response = await client.GetStringAsync("https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup=851005");
+            var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(response);
         }
 
         [HttpPost]
@@ -51,7 +55,7 @@ namespace Alice_Timetable.Controllers
 
             // Создаем новую сессию и передаем туда уже имеющуюся/новую информацию
             // о шаге пользователя и его личных данных
-            var session = new UserSession(userId, repository, State);
+            var session = new UserSession(userId, usersRepository, State);
             // Выполняем запрос и сохраняем в State обновленные данные и пользователе
             var aliceResponse = session.HandleRequest(aliceRequest, ref State);
 

@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Alice_Timetable.Models;
+using Alice_Timetable.Controllers;
+using alice_timetable.Engine;
 
 namespace Alice_Timetable
 {
@@ -30,6 +32,7 @@ namespace Alice_Timetable
             string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection, x => x.MigrationsAssembly("Alice_Timetable")));
             services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<ISchedulesRepository, SchedulesRepository>();
             services.AddControllers();
             services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
         }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -48,21 +49,40 @@ namespace Alice_Timetable.Models
         public IList<Schedules.Schedule> schedule { get; set; }
     }
 
+    //public class BsuirScheduleResponse
+    //{
+    //    public object employee { get; set; }
+    //    public StudentGroup studentGroup { get; set; }
+    //    public IList<Schedule> schedules { get; set; }
+    //    public IList<ExamSchedule> examSchedules { get; set; }
+    //    public string todayDate { get; set; }
+    //    public IList<object> todaySchedules { get; set; }
+    //    public string tomorrowDate { get; set; }
+    //    public IList<object> tomorrowSchedules { get; set; }
+    //    public int currentWeekNumber { get; set; }
+    //    public string dateStart { get; set; }
+    //    public string dateEnd { get; set; }
+    //    public object sessionStart { get; set; }
+    //    public object sessionEnd { get; set; }
+    //}
+
     public class BsuirScheduleResponse
     {
-        public object employee { get; set; }
+        [Key]
+        public int Id { get; set; }
+        public string employee { get; set; }
         public StudentGroup studentGroup { get; set; }
-        public IList<Schedule> schedules { get; set; }
+        public IList<Alice_Timetable.Models.Schedule> schedules { get; set; }
         public IList<ExamSchedule> examSchedules { get; set; }
         public string todayDate { get; set; }
-        public IList<object> todaySchedules { get; set; }
+        public IList<Alice_Timetable.Models.Schedules.Schedule> todaySchedules { get; set; }
         public string tomorrowDate { get; set; }
-        public IList<object> tomorrowSchedules { get; set; }
+        public IList<Alice_Timetable.Models.Schedules.Schedule> tomorrowSchedules { get; set; }
         public int currentWeekNumber { get; set; }
         public string dateStart { get; set; }
         public string dateEnd { get; set; }
-        public object sessionStart { get; set; }
-        public object sessionEnd { get; set; }
+        public string sessionStart { get; set; }
+        public string sessionEnd { get; set; }
     }
 }
 
@@ -71,6 +91,7 @@ namespace Alice_Timetable.Models.Schedules
     public class Schedule
     {
         [Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         public int[] weekNumber { get; set; }
         public string[] studentGroup { get; set; }

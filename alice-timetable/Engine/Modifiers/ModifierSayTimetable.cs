@@ -47,7 +47,6 @@ namespace alice_timetable.Engine.Modifiers
         {
             state.Step = Step.None;
 
-            //var date = GetDate(request.Request.Nlu.Tokens);
 
             return new SimpleResponse()
             {
