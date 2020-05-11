@@ -9,7 +9,8 @@ namespace Alice_Timetable.Engine
     public interface IUsersRepository
     {
         IQueryable<User> Users { get; }
-        User CreateOrUpdateUser(User user, string userID);
+        User CreateUser(string userID);
         User DeleteUser(string userID);
+        User UpdateUser(User user);
     }
 }

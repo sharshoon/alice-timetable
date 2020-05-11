@@ -1,5 +1,6 @@
 ﻿using alice_timetable.Engine;
 using alice_timetable.Engine.Modifiers;
+using alice_timetable.Engine.Modifiers.SettingsModifiers;
 using alice_timetable.Models;
 using Alice_Timetable.Engine;
 using Alice_Timetable.Engine.Modifiers;
@@ -23,7 +24,12 @@ namespace Alice_Timetable.Engine
             new ModifierEnter(),
             new ModifierSayTimetable(),
             new ModifierAskTimetableDate(),
-            new ModifierUnknown()
+            new ModifierDisplayAuditory(),
+            new ModifierDisplaySubjectTime(),
+            new ModifierDisplaySubjectType(),
+            new ModifierDisplayEmployee(),
+            new ModifierAskForCustomization(),
+            new ModifierUnknown(),
         };
         private readonly State _state = new State();
 
@@ -33,7 +39,7 @@ namespace Alice_Timetable.Engine
             schedulesRepository = schedulesRepo;
 
             Console.WriteLine($"Имя "+state.User.Name);
-            _state.User = usersRepository.CreateOrUpdateUser(state.User, userID);
+            _state.User = usersRepository.CreateUser(userID);
 
             Console.WriteLine($"Получена сессия пользователя {_state.User.ID}");
         }
@@ -46,6 +52,8 @@ namespace Alice_Timetable.Engine
             {
                 throw new NotSupportedException("No default modifier");
             }
+
+            _state.User = usersRepository.UpdateUser(_state.User);
             state = _state;
 
             return response;

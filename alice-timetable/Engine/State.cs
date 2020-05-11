@@ -17,6 +17,11 @@ namespace Alice_Timetable.Engine
         None,
         AwaitForName,
         AwaitForGroup,
-        AwaitForTimetable
+        AwaitForTimetable,
+        AwaitForCustomizationAnswer,
+        AwaitForDisplayingAuditory,
+        AwaitForDisplayingSubjectTime,
+        AwaitForDisplayingEmployee,
+        AwaitForDisplayingSubjectType
     }
 }

@@ -19,11 +19,15 @@ namespace alice_timetable.Engine.Modifiers
         protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
             state.User.Group = request.Request.Command;
-            state.Step = Step.None;
+            state.Step = Step.AwaitForCustomizationAnswer;
 
             return new SimpleResponse()
             {
-                Text = $"Хорошо {state.User.Name}, мы готовы к работе!"
+                Text =  $"Хорошо {state.User.Name}, мы готовы к работе! \n" +
+                        $"Но, перед тем, как начать, я хотела бы спросить тебя о том, " +
+                        $"не хотел бы настроить то, какую конкретно информацию я буду тебе озвучивать? " +
+                        $"Ты можешь пропустить это шаг и тогда я буду действовать по умолчанию, " +
+                        $"но, не бойся, ты всегда сможешь поменять эти настройки"
             };
         }
     }

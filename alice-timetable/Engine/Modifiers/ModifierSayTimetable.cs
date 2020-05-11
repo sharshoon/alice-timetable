@@ -67,20 +67,36 @@ namespace alice_timetable.Engine.Modifiers
             // Делим на 7, получаем кол-во недель с начала семестра
             // делаем mod 4 + 1, чтобы получить номер учебной недели
             var currentWeek = (Date - DateTime.Parse(schedule.dateStart)).Days / 7 % 4 + 1;
-            var dayNumber = (int)Date.DayOfWeek - 1;
+            var dayNumber = (int)Date.DayOfWeek;
 
             var responseText = "";
-            foreach(var item in schedule.schedules[dayNumber].schedule)
+            // 0 - Sunday
+            if (dayNumber != 0) 
             {
-                if (item.weekNumber.Contains(currentWeek))
+                var number = 1;
+                foreach (var item in schedule.schedules[dayNumber - 1].schedule)
                 {
-                    responseText = responseText + item.subject + "\n";
+                    if (item.weekNumber.Contains(currentWeek))
+                    {
+                        responseText += $"{number}. {item.subject}";
+                        
+                        responseText += item.numSubgroup != 0 ? $" ({item.numSubgroup} подгруппа) \n" : "\n";
+
+                        responseText += state.User.DisplaySubjectType ? item.lessonType + "\n" : "";
+                        responseText += state.User.DisplaySubjectTime ? item.lessonTime + "\n": "";
+                        responseText += state.User.DisplayAuditory ? String.Join("", item.auditory) + "\n" : "";
+                        responseText += state.User.DisplayEmployeeName ? 
+                            $" {item.employee[0].lastName}  {item.employee[0].lastName} {item.employee[0].middleName} \n" 
+                            : "";
+
+                        responseText += "\n";
+                        number++;
+                    }
                 }
-                
             }
 
             responseText = String.IsNullOrWhiteSpace(responseText)
-                ? "Сегодня нет ни одной пары"
+                ? "В этот день нет ни одной пары"
                 : responseText;
 
             var response = new SimpleResponse()
@@ -106,10 +122,12 @@ namespace alice_timetable.Engine.Modifiers
             };
 
             // Если пользователь задал какой-то конкретный день недели
-            var weekDay = tokens.FirstOrDefault(token => weekDays.Any(day => token.StartsWith(day)));
+            var weekDay = weekDays.FirstOrDefault(item => tokens.Any(token => token.StartsWith(item)));
             if (weekDay != null)
             {
-                var date = DateTime.Today.AddDays(weekDays.IndexOf(weekDay) - (int)DateTime.Today.DayOfWeek);
+                var index = weekDays.IndexOf(weekDay) + 1;
+                var todayDay = (int)DateTime.Today.DayOfWeek;
+                var date = DateTime.Today.AddDays(Math.Abs(index - todayDay));
                 Date = date;
 
                 return true;
