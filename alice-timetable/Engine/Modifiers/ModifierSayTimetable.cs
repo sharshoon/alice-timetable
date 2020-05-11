@@ -64,6 +64,14 @@ namespace alice_timetable.Engine.Modifiers
                 schedulesRepo.AddSchedule(schedule);
             }
 
+            if(Date > DateTime.Parse(schedule.dateEnd) || Date < DateTime.Parse(schedule.dateStart))
+            {
+                return new SimpleResponse()
+                {
+                    Text = "Вы указали слишком большую, или слишком маленьку дату, которая не входит в ваш учебный семестр!"
+                };
+            }
+
             // Делим на 7, получаем кол-во недель с начала семестра
             // делаем mod 4 + 1, чтобы получить номер учебной недели
             var currentWeek = (Date - DateTime.Parse(schedule.dateStart)).Days / 7 % 4 + 1;
@@ -85,8 +93,8 @@ namespace alice_timetable.Engine.Modifiers
                         responseText += state.User.DisplaySubjectType ? item.lessonType + "\n" : "";
                         responseText += state.User.DisplaySubjectTime ? item.lessonTime + "\n": "";
                         responseText += state.User.DisplayAuditory ? String.Join("", item.auditory) + "\n" : "";
-                        responseText += state.User.DisplayEmployeeName ? 
-                            $" {item.employee[0].lastName}  {item.employee[0].lastName} {item.employee[0].middleName} \n" 
+                        responseText += state.User.DisplayEmployeeName && item.employee.Count > 0 ? 
+                            $" {item.employee[0].lastName}  {item.employee[0].firstName} {item.employee[0].middleName} \n" 
                             : "";
 
                         responseText += "\n";
@@ -165,32 +173,16 @@ namespace alice_timetable.Engine.Modifiers
                     var day = tokens.FirstOrDefault(token => dateEnds.Any(end => token.StartsWith(end)));
                     if (day != null)
                     {
-                        // Если написать, то 06.03.2001 то по идее работать пока не будет
-                        var months = new List<string>
+                        // Если ввели если месяц ввели числом
+                        if (DateTime.TryParse(String.Join(".", tokens.Skip(tokens.IndexOf(day))), out Date))
                         {
-                            "январ",
-                            "феврал",
-                            "март",
-                            "апрел",
-                            "мая",
-                            "июн",
-                            "июл",
-                            "август",
-                            "сентябр",
-                            "октябр",
-                            "ноябр",
-                            "декабр",
-                            "1","2","3","4","5","6",
-                            "7","8","9","10","11","12"
-                        };
+                            //// Чтобы нельзя было посмотреть расписание на предыдущие даты
+                            //if(Date < DateTime.Now.AddDays(-1))
+                            //{
+                            //    return false;
+                            //}
 
-                        var month = tokens
-                            .Skip(tokens.IndexOf(day) + 1)
-                            .FirstOrDefault(token => months.Any(month => token.StartsWith(month)));
-
-                        if (month != null && tokens.IndexOf(month) + 1 == tokens.Count())
-                        {
-                            return DateTime.TryParse($"{day} {month}", out Date);
+                            return true;
                         }
                         else
                         {
