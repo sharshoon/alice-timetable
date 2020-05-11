@@ -50,11 +50,13 @@ namespace alice_timetable.Engine.Modifiers
         protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
             state.Step = Step.None;
-            if (true)
+
+            var schedule = SchedulesRepository.Schedules.FirstOrDefault(item => item.Group == int.Parse(state.User.Group));
+            if (schedule != null)
             {
                 var response = new SimpleResponse()
                 {
-                    Text = "такое есть в хранилище"
+                    Text = schedule.currentWeekNumber.ToString()
                 };
                 return response;
             }
@@ -67,6 +69,8 @@ namespace alice_timetable.Engine.Modifiers
                 var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(bsuirStringResponse);
 
                 bsuirResponse.Group = int.Parse(bsuirResponse.studentGroup.name);
+
+                schedulesRepo.AddSchedule(bsuirResponse);
 
                 var response = new SimpleResponse()
                 {

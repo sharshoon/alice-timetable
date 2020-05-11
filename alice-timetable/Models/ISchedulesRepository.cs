@@ -8,9 +8,8 @@ namespace alice_timetable.Models
 {
     public interface ISchedulesRepository
     {
-        IQueryable<BsuirScheduleResponse> Schedules { get; }
-        BsuirScheduleResponse TryGetSchedule(int group);
+        static IList<BsuirScheduleResponse> Schedules { get; }
         BsuirScheduleResponse AddSchedule(BsuirScheduleResponse schedule);
-        BsuirScheduleResponse TryDeleteSchedule(int group);
+        BsuirScheduleResponse DeleteSchedule(int group);
     }
 }

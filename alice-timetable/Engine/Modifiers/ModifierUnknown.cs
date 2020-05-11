@@ -19,7 +19,7 @@ namespace Alice_Timetable.Engine.Modifiers
         {
             return new SimpleResponse()
             {
-                Text = $"Не поняла {state.Step.ToString()}"
+                Text = $"Не поняла"
             };
         }
     }
