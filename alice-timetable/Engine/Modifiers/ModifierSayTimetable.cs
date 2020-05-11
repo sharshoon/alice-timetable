@@ -52,32 +52,42 @@ namespace alice_timetable.Engine.Modifiers
             state.Step = Step.None;
 
             var schedule = SchedulesRepository.Schedules.FirstOrDefault(item => item.Group == int.Parse(state.User.Group));
-            if (schedule != null)
-            {
-                var response = new SimpleResponse()
-                {
-                    Text = schedule.currentWeekNumber.ToString()
-                };
-                return response;
-            }
-            else
+            if (schedule == null)
             {
                 var client = new HttpClient();
                 var bsuirStringResponse = client
                     .GetStringAsync($"https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup={state.User.Group}")
                     .Result;
-                var bsuirResponse = JsonConvert.DeserializeObject<BsuirScheduleResponse>(bsuirStringResponse);
+                schedule = JsonConvert.DeserializeObject<BsuirScheduleResponse>(bsuirStringResponse);
+                schedule.Group = int.Parse(schedule.studentGroup.name);
 
-                bsuirResponse.Group = int.Parse(bsuirResponse.studentGroup.name);
-
-                schedulesRepo.AddSchedule(bsuirResponse);
-
-                var response = new SimpleResponse()
-                {
-                    Text = "Такого нет в хранище, но уже добавлено!"
-                };
-                return response;
+                schedulesRepo.AddSchedule(schedule);
             }
+
+            // Делим на 7, получаем кол-во недель с начала семестра
+            // делаем mod 4 + 1, чтобы получить номер учебной недели
+            var currentWeek = (Date - DateTime.Parse(schedule.dateStart)).Days / 7 % 4 + 1;
+            var dayNumber = (int)Date.DayOfWeek - 1;
+
+            var responseText = "";
+            foreach(var item in schedule.schedules[dayNumber].schedule)
+            {
+                if (item.weekNumber.Contains(currentWeek))
+                {
+                    responseText = responseText + item.subject + "\n";
+                }
+                
+            }
+
+            responseText = String.IsNullOrWhiteSpace(responseText)
+                ? "Сегодня нет ни одной пары"
+                : responseText;
+
+            var response = new SimpleResponse()
+            {
+                Text = $"{responseText}"
+            };
+            return response;
         }
         
         private bool DateCheck(IList<string> tokens)
