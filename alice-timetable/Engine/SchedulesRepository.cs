@@ -1,4 +1,5 @@
-﻿using Alice_Timetable.Engine;
+﻿using alice_timetable.Models;
+using Alice_Timetable.Engine;
 using Alice_Timetable.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace alice_timetable.Models
+namespace alice_timetable.Engine
 {
     public class SchedulesRepository : ISchedulesRepository
     {
@@ -17,14 +18,6 @@ namespace alice_timetable.Models
         {
             context = ctx;
             Console.WriteLine("Создан объект SchedulesRepository");
-
-            using var client = new HttpClient();
-            var response = client.GetStringAsync("https://journal.bsuir.by/api/v1/employees").Result;
-
-            var employees = JsonConvert.DeserializeObject<List<Teacher>>(response);
-
-            employees.ForEach(empl => context.Teachers.Add(empl));
-            context.SaveChanges();
         }
 
         static SchedulesRepository()
@@ -44,6 +37,7 @@ namespace alice_timetable.Models
         private DatabaseContext context;
         public IQueryable<Teacher> Teachers => context.Teachers;
         public static IList<BsuirScheduleResponse> Schedules;
+        public static IList<TeacherScheduleResponse> TeacherSchedules;
 
         public BsuirScheduleResponse AddSchedule(BsuirScheduleResponse schedule)
         {
@@ -71,6 +65,17 @@ namespace alice_timetable.Models
             }
 
             return item;
+        }
+
+        private void GetTeachers()
+        {
+            using var client = new HttpClient();
+            var response = client.GetStringAsync("https://journal.bsuir.by/api/v1/employees").Result;
+
+            var employees = JsonConvert.DeserializeObject<List<Teacher>>(response);
+
+            employees.ForEach(empl => context.Teachers.Add(empl));
+            context.SaveChanges();
         }
 
     }
