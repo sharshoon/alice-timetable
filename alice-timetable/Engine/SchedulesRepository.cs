@@ -19,26 +19,39 @@ namespace alice_timetable.Engine
             context = ctx;
             Console.WriteLine("Создан объект SchedulesRepository");
         }
-
         static SchedulesRepository()
         {
-            Schedules = new List<BsuirScheduleResponse>();
-            var files = Directory.GetFiles(repositoryPath).ToList();
-            files.ForEach(
-            file =>
+            Schedules = Directory.GetFiles(schedulesPath)
+            .Select(file =>
             {
                 var content = File.ReadAllText(file);
                 var schedule = JsonConvert.DeserializeObject<BsuirScheduleResponse>(content);
                 schedule.Group = int.Parse(schedule.studentGroup.name);
-                Schedules.Add(schedule);
-            });
+                return schedule;
+            })
+            .ToList();
+
+            TeacherSchedules =
+            Directory.GetFiles(teachersSchedulesPath)
+            .Select(file =>
+            {
+                var content = File.ReadAllText(file);
+                var schedule = JsonConvert.DeserializeObject<TeacherScheduleResponse>(content);
+                return schedule;
+            })
+            .ToList();
+
+            using var client = new HttpClient();
+            CurrentWeek = int.Parse(client.GetStringAsync("http://journal.bsuir.by/api/v1/week").Result);
         }
-        private static readonly string repositoryPath = $"{Environment.CurrentDirectory}\\SchedulesRepository";
+        private static readonly string schedulesPath = $"{Environment.CurrentDirectory}\\SchedulesRepository";
+        private static readonly string teachersSchedulesPath = $"{Environment.CurrentDirectory}\\TeacherSсhedulesRepository";
+
         private DatabaseContext context;
         public IQueryable<Teacher> Teachers => context.Teachers;
         public static IList<BsuirScheduleResponse> Schedules;
         public static IList<TeacherScheduleResponse> TeacherSchedules;
-
+        public static int CurrentWeek;
         public BsuirScheduleResponse AddSchedule(BsuirScheduleResponse schedule)
         {
             var item = Schedules.FirstOrDefault(item => item.Group == schedule.Group);
@@ -47,7 +60,7 @@ namespace alice_timetable.Engine
                 Schedules.Remove(item);
             }
 
-            using var file = new StreamWriter($"{repositoryPath}\\{schedule.Group}.txt", false);
+            using var file = new StreamWriter($"{schedulesPath}\\{schedule.Group}.txt", false);
             var content = JsonConvert.SerializeObject(schedule);
             file.Write(content);
 
@@ -55,15 +68,14 @@ namespace alice_timetable.Engine
             return item;
         }
 
-        public BsuirScheduleResponse DeleteSchedule(int group)
+        public BsuirScheduleResponse? DeleteSchedule(int group)
         {
             var item = Schedules.FirstOrDefault(item => item.Group == group);
             if (item != null)
             {
-                File.Delete($"{repositoryPath}\\{item.Group}.txt");
+                File.Delete($"{schedulesPath}\\{item.Group}.txt");
                 Schedules.Remove(item);
             }
-
             return item;
         }
 
@@ -78,5 +90,32 @@ namespace alice_timetable.Engine
             context.SaveChanges();
         }
 
+        public TeacherScheduleResponse AddTeacherSchedule(TeacherScheduleResponse schedule)
+        {
+            var item = TeacherSchedules.FirstOrDefault(item => item.employee.id == schedule.employee.id);
+            if (item != null)
+            {
+                TeacherSchedules.Remove(item);
+            }
+
+            using var file = new StreamWriter($"{teachersSchedulesPath}\\{schedule.employee.id}.txt", false);
+            var content = JsonConvert.SerializeObject(schedule);
+            file.Write(content);
+
+            TeacherSchedules.Add(schedule);
+            return item;
+        }
+
+        public TeacherScheduleResponse? DeleteTeacherSchedule(int id)
+        {
+            var item = TeacherSchedules.FirstOrDefault(item => item.employee.id == id);
+            if (item != null)
+            {
+                File.Delete($"{teachersSchedulesPath}\\{item.employee.id}.txt");
+                TeacherSchedules.Remove(item);
+            }
+
+            return item;
+        }
     }
 }

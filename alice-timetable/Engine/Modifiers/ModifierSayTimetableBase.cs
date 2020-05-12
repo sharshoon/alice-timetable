@@ -17,21 +17,37 @@ namespace alice_timetable.Engine.Modifiers
 
         protected override abstract SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state);
 
-        protected string FormResponse(BsuirScheduleResponse schedule, State state)
+        protected string FormResponse(int week, IList<Schedule> schedules, State state)
         {
             // Делим на 7, получаем кол-во недель с начала семестра
             // делаем mod 4 + 1, чтобы получить номер учебной недели
-            var currentWeek = (Date - DateTime.Parse(schedule.dateStart)).Days / 7 % 4 + 1;
-            var dayNumber = (int)Date.DayOfWeek;
+            //var currentWeek = (Date - DateTime.Parse(dateStart)).Days / 7 % 4 + 1;
+            //var dayNumber = (int)Date.DayOfWeek;
 
             var responseText = "";
             // 0 - Sunday
-            if (dayNumber != 0)
+            if ((int)Date.DayOfWeek != 0 && schedules.Count() > 0)
             {
-                var number = 1;
-                foreach (var item in schedule.schedules[dayNumber - 1].schedule)
+                var weekDays = new Dictionary<string, string>
                 {
-                    if (item.weekNumber.Contains(currentWeek))
+                    ["понедельник"] = "monday",
+                    ["вторник"] = "tuesday",
+                    ["среда"] = "wednesday",
+                    ["четверг"] = "thursday",
+                    ["пятница"] = "friday",
+                    ["суббота"] = "satuday",
+                    ["воскресенье"] = "sunday"
+                };
+                var schedule = schedules.FirstOrDefault(schedule => weekDays[schedule.weekDay.ToLower()] == Date.DayOfWeek.ToString().ToLower());
+                if (schedule == null)
+                {
+                    return "";
+                }
+
+                var number = 1;
+                foreach (var item in schedule.schedule)
+                {
+                    if (item.weekNumber.Contains(week))
                     {
                         responseText += $"{number}. {item.subject}";
 

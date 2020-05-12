@@ -55,38 +55,29 @@ namespace alice_timetable.Engine.Modifiers
 
             if (teacher != null)
             {
+                var schedule = SchedulesRepository.TeacherSchedules.FirstOrDefault(item => item.employee.id == teacher.id);
+                if (schedule == null)
+                {
+                    using var client = new HttpClient();
+                    var bsuirStringResponse = client
+                        .GetStringAsync($"https://journal.bsuir.by/api/v1/portal/employeeSchedule?employeeId={teacher.id}")
+                        .Result;
+                    schedule = JsonConvert.DeserializeObject<TeacherScheduleResponse>(bsuirStringResponse);
+                    schedulesRepo.AddTeacherSchedule(schedule);
+                }
+
+                
+                var responseText = FormResponse(SchedulesRepository.CurrentWeek, schedule.schedules, state);
+
+                responseText = String.IsNullOrWhiteSpace(responseText)
+                    ? "В этот день нет ни одной пары"
+                    : responseText;
+
                 return new SimpleResponse()
                 {
-                    Text = teacher.id.ToString()
+                    Text = $"{responseText}"
                 };
             }
-
-            //var schedule = SchedulesRepository.Schedules.FirstOrDefault(item => item.Group == int.Parse(state.User.Group));
-            //if (schedule == null)
-            //{
-            //    using var client = new HttpClient();
-            //    var bsuirStringResponse = client
-            //        .GetStringAsync($"https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup={state.User.Group}")
-            //        .Result;
-            //    schedule = JsonConvert.DeserializeObject<BsuirScheduleResponse>(bsuirStringResponse);
-            //    schedule.Group = int.Parse(schedule.studentGroup.name);
-
-            //    schedulesRepo.AddSchedule(schedule);
-            //}
-
-            //if (Date > DateTime.Parse(schedule.dateEnd) || Date < DateTime.Parse(schedule.dateStart))
-            //{
-            //    return new SimpleResponse()
-            //    {
-            //        Text = "Вы указали слишком большую, или слишком маленьку дату, которая не входит в ваш учебный семестр!"
-            //    };
-            //}
-
-            //var responseText = FormResponse(schedule, state);
-
-            //responseText = String.IsNullOrWhiteSpace(responseText)
-            //    ? "В этот день нет ни одной пары"
-            //    : responseText;
 
             var response = new SimpleResponse()
             {

@@ -11,8 +11,11 @@ namespace alice_timetable.Engine
     {
         static IList<BsuirScheduleResponse> Schedules { get; }
         static IList<TeacherScheduleResponse> TeacherSchedules { get; }
+        static int CurrentWeek { get; }
         IQueryable<Teacher> Teachers { get; }
         BsuirScheduleResponse AddSchedule(BsuirScheduleResponse schedule);
         BsuirScheduleResponse DeleteSchedule(int group);
+        TeacherScheduleResponse AddTeacherSchedule(TeacherScheduleResponse schedule);
+        TeacherScheduleResponse DeleteTeacherSchedule(int id);
     }
 }

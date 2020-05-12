@@ -71,7 +71,7 @@ namespace alice_timetable.Engine.Modifiers
                 };
             }
 
-            var responseText = FormResponse(schedule, state);
+            var responseText = FormResponse(SchedulesRepository.CurrentWeek, schedule.schedules, state);
 
             responseText = String.IsNullOrWhiteSpace(responseText)
                 ? "В этот день нет ни одной пары"
