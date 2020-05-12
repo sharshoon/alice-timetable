@@ -54,7 +54,7 @@ namespace alice_timetable.Engine.Modifiers
             var schedule = SchedulesRepository.Schedules.FirstOrDefault(item => item.Group == int.Parse(state.User.Group));
             if (schedule == null)
             {
-                var client = new HttpClient();
+                using var client = new HttpClient();
                 var bsuirStringResponse = client
                     .GetStringAsync($"https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup={state.User.Group}")
                     .Result;

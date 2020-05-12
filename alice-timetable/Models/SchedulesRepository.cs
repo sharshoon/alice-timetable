@@ -6,16 +6,25 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace alice_timetable.Models
 {
     public class SchedulesRepository : ISchedulesRepository
     {
-        private static string repositoryPath = $"{Environment.CurrentDirectory}\\SchedulesRepository";
-        public SchedulesRepository()
+        public SchedulesRepository(DatabaseContext ctx)
         {
+            context = ctx;
             Console.WriteLine("Создан объект SchedulesRepository");
+
+            using var client = new HttpClient();
+            var response = client.GetStringAsync("https://journal.bsuir.by/api/v1/employees").Result;
+
+            var employees = JsonConvert.DeserializeObject<List<Teacher>>(response);
+
+            employees.ForEach(empl => context.Teachers.Add(empl));
+            context.SaveChanges();
         }
 
         static SchedulesRepository()
@@ -31,6 +40,9 @@ namespace alice_timetable.Models
                 Schedules.Add(schedule);
             });
         }
+        private static readonly string repositoryPath = $"{Environment.CurrentDirectory}\\SchedulesRepository";
+        private DatabaseContext context;
+        public IQueryable<Teacher> Teachers => context.Teachers;
         public static IList<BsuirScheduleResponse> Schedules;
 
         public BsuirScheduleResponse AddSchedule(BsuirScheduleResponse schedule)

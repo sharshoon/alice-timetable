@@ -21,6 +21,16 @@ namespace Alice_Timetable.Engine
         {
             optionsBuilder.EnableSensitiveDataLogging();
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Teacher>()
+                .Property(p => p.academicDepartment)
+                .HasConversion(
+                v => string.Join(',', v),
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+        }
         public DbSet<User> Users { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
     }
 }
