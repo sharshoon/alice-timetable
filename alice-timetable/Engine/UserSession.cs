@@ -1,14 +1,11 @@
 ﻿using alice_timetable.Engine;
 using alice_timetable.Engine.Modifiers;
 using alice_timetable.Engine.Modifiers.SettingsModifiers;
-using alice_timetable.Models;
-using Alice_Timetable.Engine;
 using Alice_Timetable.Engine.Modifiers;
 using Alice_Timetable.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Alice_Timetable.Engine
 {
@@ -18,6 +15,8 @@ namespace Alice_Timetable.Engine
         ISchedulesRepository schedulesRepository;
         private static readonly List<ModifierBase> Modifiers = new List<ModifierBase>()
         {
+            new ModifierHelp(),
+            new ModifierWhatCanIDo(),
             new ModifierFirstEnter(),
             new ModifierGetName(),
             new ModifierGetGroup(),
@@ -30,7 +29,6 @@ namespace Alice_Timetable.Engine
             new ModifierDisplaySubjectType(),
             new ModifierDisplayEmployee(),
             new ModifierAskForCustomization(),
-            new ModifierWhatCanIDo(),
             new ModifierChangeName(),
             new ModifierGetNewName(),
             new ModifierChangeGroup(),

@@ -70,7 +70,7 @@ namespace alice_timetable.Engine.Modifiers
                 var weeksAdd = (Date - mondayThisWeek).Days / 7;
                 var week = (weeksAdd + SchedulesRepository.CurrentWeek - 1) % 4 + 1;
 
-                var responseText = FormResponse(SchedulesRepository.CurrentWeek, schedule.schedules, state);
+                var responseText = FormResponse(week, schedule.schedules, state);
 
                 responseText = String.IsNullOrWhiteSpace(responseText)
                     ? "В этот день нет ни одной пары"
@@ -96,7 +96,7 @@ namespace alice_timetable.Engine.Modifiers
                 return schedulesRepo.Teachers.FirstOrDefault(teacher =>
                     (name.Count() == 3 && teacher.lastName.StartsWith(name[0]) && teacher.firstName.StartsWith(name[1]) && teacher.middleName.StartsWith(name[2]))
                     || (name.Count() == 2 && teacher.lastName.StartsWith(name[0]) && teacher.firstName.StartsWith(name[1]))
-                    || (teacher.lastName.StartsWith(name[0])));
+                    || (name.Count() == 1 && teacher.lastName.StartsWith(name[0])));
             }
             return null;
         }

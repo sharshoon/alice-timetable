@@ -4,13 +4,10 @@ using Alice_Timetable.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.File;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace alice_timetable.Engine
 {
@@ -20,6 +17,7 @@ namespace alice_timetable.Engine
         {
             context = ctx;
             Console.WriteLine("Создан объект SchedulesRepository");
+
         }
         static SchedulesRepository()
         {
@@ -71,6 +69,7 @@ namespace alice_timetable.Engine
             {
                 throw new Exception("Ошибка, такого файлового хранилища нет!");
             }
+
         }
         private static readonly string connectionString = $"DefaultEndpointsProtocol=https;AccountName=csb10032000bf1a412a;AccountKey=/PyUURwZBhxZqjFNaRLwA1KcI7YdoH6UaPB+K6OJNvOpJ82iNoUOvgIO0ogpgkBouJq/SgVXwO+Qbh/FBaNV6g==;EndpointSuffix=core.windows.net";
         private static readonly CloudFileDirectory schedulesDir;
@@ -119,34 +118,25 @@ namespace alice_timetable.Engine
 
         public TeacherScheduleResponse AddTeacherSchedule(TeacherScheduleResponse schedule)
         {
-            // var item = TeacherSchedules.FirstOrDefault(item => item.employee.id == schedule.employee.id);
-            // if (item != null)
-            // {
-            //     TeacherSchedules.Remove(item);
-            // }
+            var item = TeacherSchedules.FirstOrDefault(item => item.employee.id == schedule.employee.id);
+            if (item != null)
+            {
+                TeacherSchedules.Remove(item);
+            }
 
-            // using var file = new StreamWriter($"{teachersSchedulesPath}\\{schedule.employee.id}.txt", false);
-            // var content = JsonConvert.SerializeObject(schedule);
-            // file.Write(content);
-
-            // TeacherSchedules.Add(schedule);
-            // return item;
-
-            return null;
+            teachersSchedulesDir.GetFileReference($"{schedule.employee.id}.txt").UploadTextAsync(JsonConvert.SerializeObject(schedule));
+            TeacherSchedules.Add(schedule);
+            return item;
         }
 
         public TeacherScheduleResponse? DeleteTeacherSchedule(int id)
         {
-            // var item = TeacherSchedules.FirstOrDefault(item => item.employee.id == id);
-            // if (item != null)
-            // {
-            //     File.Delete($"{teachersSchedulesPath}\\{item.employee.id}.txt");
-            //     TeacherSchedules.Remove(item);
-            // }
-
-            //return item;
-
-            return null;
+            var item = TeacherSchedules.FirstOrDefault(item => item.employee.id == id);
+            if (item != null)
+            {
+                schedulesDir.GetFileReference($"{item.employee.id}.txt").DeleteIfExistsAsync();
+            }
+            return item;
         }
     }
 }
