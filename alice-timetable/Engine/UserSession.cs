@@ -30,6 +30,11 @@ namespace Alice_Timetable.Engine
             new ModifierDisplaySubjectType(),
             new ModifierDisplayEmployee(),
             new ModifierAskForCustomization(),
+            new ModifierWhatCanIDo(),
+            new ModifierChangeName(),
+            new ModifierGetNewName(),
+            new ModifierChangeGroup(),
+            new ModifierGetNewGroup(),
             new ModifierUnknown(),
         };
         private readonly State _state = new State();

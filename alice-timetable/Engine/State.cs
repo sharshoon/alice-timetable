@@ -21,6 +21,8 @@ namespace Alice_Timetable.Engine
         AwaitForDisplayingAuditory,
         AwaitForDisplayingSubjectTime,
         AwaitForDisplayingEmployee,
-        AwaitForDisplayingSubjectType
+        AwaitForDisplayingSubjectType,
+        AwaitForNewName,
+        AwaitForNewGroup
     }
 }
