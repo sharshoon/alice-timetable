@@ -66,7 +66,10 @@ namespace alice_timetable.Engine.Modifiers
                     schedulesRepo.AddTeacherSchedule(schedule);
                 }
 
-                
+                var mondayThisWeek = DateTime.Today.AddDays(-((int)DateTime.Today.DayOfWeek == 0 ? 6 : (int)DateTime.Today.DayOfWeek - 1));
+                var weeksAdd = (Date - mondayThisWeek).Days / 7;
+                var week = (weeksAdd + SchedulesRepository.CurrentWeek - 1) % 4 + 1;
+
                 var responseText = FormResponse(SchedulesRepository.CurrentWeek, schedule.schedules, state);
 
                 responseText = String.IsNullOrWhiteSpace(responseText)

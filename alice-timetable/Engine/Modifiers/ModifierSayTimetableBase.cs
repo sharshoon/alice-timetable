@@ -4,6 +4,7 @@ using Alice_Timetable.Engine.Modifiers;
 using Alice_Timetable.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,7 +13,6 @@ namespace alice_timetable.Engine.Modifiers
     public abstract class ModifierSayTimetableBase : ModifierBase
     {
         protected DateTime Date;
-
         protected override abstract bool Check(AliceRequest request, State state);
 
         protected override abstract SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state);
@@ -35,7 +35,7 @@ namespace alice_timetable.Engine.Modifiers
                     ["среда"] = "wednesday",
                     ["четверг"] = "thursday",
                     ["пятница"] = "friday",
-                    ["суббота"] = "satuday",
+                    ["суббота"] = "saturday",
                     ["воскресенье"] = "sunday"
                 };
                 var schedule = schedules.FirstOrDefault(schedule => weekDays[schedule.weekDay.ToLower()] == Date.DayOfWeek.ToString().ToLower());
@@ -89,8 +89,10 @@ namespace alice_timetable.Engine.Modifiers
             if (weekDay != null)
             {
                 var index = weekDays.IndexOf(weekDay) + 1;
-                var todayDay = (int)DateTime.Today.DayOfWeek;
-                var date = DateTime.Today.AddDays(Math.Abs(index - todayDay));
+                var todayDay = (int)DateTime.Today.DayOfWeek == 0 ? 7 : (int)DateTime.Today.DayOfWeek;
+                var daysToAdd = (index - todayDay) >= 0 ? index - todayDay : 7 - Math.Abs(index - todayDay);
+
+                var date = DateTime.Today.AddDays(daysToAdd);
                 Date = date;
 
                 return true;
@@ -107,6 +109,7 @@ namespace alice_timetable.Engine.Modifiers
                 {
                     var date = DateTime.Today.AddDays(nearDays.IndexOf(nearDay));
                     Date = date;
+
                     return true;
                 }
                 else
@@ -129,7 +132,7 @@ namespace alice_timetable.Engine.Modifiers
                     if (day != null)
                     {
                         // Если ввели если месяц ввели числом
-                        if (DateTime.TryParse(String.Join(".", tokens.Skip(tokens.IndexOf(day))), out Date))
+                        if (DateTime.TryParse(String.Join(".", tokens.Skip(tokens.IndexOf(day))),CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.None, out Date))
                         {
                             //// Чтобы нельзя было посмотреть расписание на предыдущие даты
                             //if(Date < DateTime.Now.AddDays(-1))

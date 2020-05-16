@@ -14,7 +14,6 @@ namespace Alice_Timetable.Engine
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options)
         {
-            Console.WriteLine("Создан объект контекста");
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

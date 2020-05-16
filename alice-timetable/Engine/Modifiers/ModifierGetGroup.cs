@@ -18,17 +18,31 @@ namespace alice_timetable.Engine.Modifiers
 
         protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
-            state.User.Group = request.Request.Command;
-            state.Step = Step.AwaitForCustomizationAnswer;
-
-            return new SimpleResponse()
+            var result = 0;
+            if (request.Request.Command.Trim().Length == 6 && int.TryParse(request.Request.Command, out result))
             {
-                Text =  $"Хорошо {state.User.Name}, мы готовы к работе! \n" +
-                        $"Но, перед тем, как начать, я хотела бы спросить тебя о том, " +
-                        $"не хотел бы настроить то, какую конкретно информацию я буду тебе озвучивать? " +
-                        $"Ты можешь пропустить это шаг и тогда я буду действовать по умолчанию, " +
-                        $"но, не бойся, ты всегда сможешь поменять эти настройки"
-            };
+                state.User.Group = result.ToString();
+                state.Step = Step.AwaitForCustomizationAnswer;
+
+                return new SimpleResponse()
+                {
+                    Text = $"Хорошо {state.User.Name}, мы готовы к работе! \n" +
+                            $"Но, перед тем, как начать, я хотела бы спросить тебя о том, " +
+                            $"не хотел бы настроить то, какую конкретно информацию я буду тебе озвучивать? " +
+                            $"Ты можешь пропустить это шаг и тогда я буду действовать по умолчанию, " +
+                            $"но, не бойся, ты всегда сможешь поменять эти настройки"
+                };
+            }
+            else
+            {
+                state.Step = Step.AwaitForGroup;
+
+                return new SimpleResponse()
+                {
+                    Text = $"Хм, {state.User.Name}, мне кажется, что ты ввел неправильную группу." +
+                            $"Группа должна состоять из 6 цифр, к примеру '851005'"
+                };
+            }
         }
     }
 }

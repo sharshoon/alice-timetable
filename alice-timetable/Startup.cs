@@ -18,6 +18,8 @@ using Alice_Timetable.Models;
 using Alice_Timetable.Controllers;
 using alice_timetable.Engine;
 using alice_timetable.Models;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.File;
 
 namespace Alice_Timetable
 {
@@ -30,12 +32,11 @@ namespace Alice_Timetable
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            string connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection, x => x.MigrationsAssembly("Alice_Timetable")));
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), x => x.MigrationsAssembly("Alice_Timetable")));
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<ISchedulesRepository, SchedulesRepository>();
             services.AddControllers();
-            services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
+            services.Configure<IISServerOptions>(options => { options.AllowSynchronousIO = true; });
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

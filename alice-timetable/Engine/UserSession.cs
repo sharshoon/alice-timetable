@@ -39,7 +39,7 @@ namespace Alice_Timetable.Engine
             usersRepository = usersRepo;
             schedulesRepository = schedulesRepo;
 
-            Console.WriteLine($"Имя "+state.User.Name);
+            Console.WriteLine($"Имя " + state.User.Name);
             _state.User = usersRepository.CreateUser(userID);
 
             Console.WriteLine($"Получена сессия пользователя {_state.User.ID}");

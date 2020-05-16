@@ -27,37 +27,6 @@ namespace Alice_Timetable.Engine
             return dbEntry;
         }
 
-        public User CreateOrUpdateUser(User user, string userID)
-        {
-            var dbEntry = context.Users.FirstOrDefault(u => u.ID == userID);
-
-            if (dbEntry == null)
-            {
-                dbEntry = new User();
-                dbEntry.ID = userID;
-                context.Users.Add(dbEntry);
-                user = dbEntry;
-
-                Console.WriteLine($"Создан новый пользователь {dbEntry.ID}");
-            }
-            else
-            {
-                dbEntry.Name = dbEntry.Name != user.Name && !String.IsNullOrEmpty(user.Name) ? user.Name : dbEntry.Name;
-                dbEntry.Group = dbEntry.Group != user.Group  && !String.IsNullOrEmpty(user.Group) ? user.Group : dbEntry.Group;
-                dbEntry.Group = dbEntry.Group != user.Group && !String.IsNullOrEmpty(user.Group) ? user.Group : dbEntry.Group;
-
-                user = context.Users.Update(user).Entity;
-                Console.WriteLine($"Обратился пользователь {user.ID}, имя - {user.Name}, группа - {user.Group}" + 
-                                    $"1 = {user.DisplayAuditory}" +
-                                    $"2 = {user.DisplaySubjectType}" +
-                                    $"3 = {user.DisplaySubjectTime}" +
-                                    $"4 = {user.DisplayEmployeeName}");
-            }
-
-            context.SaveChanges();
-            return user;
-        }
-
         public User CreateUser(string userID)
         {
             var dbEntry = context.Users.FirstOrDefault(u => u.ID == userID);
