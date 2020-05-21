@@ -49,11 +49,22 @@ namespace alice_timetable.Engine.Modifiers
                 {
                     if (item.weekNumber.Contains(week))
                     {
-                        responseText += $"{number}. {item.subject}";
+                        responseText += $"{number}. '{item.subject}'";
 
                         responseText += item.numSubgroup != 0 ? $" ({item.numSubgroup} подгруппа) \n" : "\n";
 
-                        responseText += state.User.DisplaySubjectType ? item.lessonType + "\n" : "";
+                        if (state.User.DisplaySubjectType)
+                        {
+                            var subjectTypes = new Dictionary<string, string>
+                            {
+                                ["ПЗ"] = "Практическое занятие",
+                                ["ЛР"] = "Лабораторная работа",
+                                ["ЛК"] = "Лекция"
+                            };
+
+                            var type = subjectTypes.ContainsKey(item.lessonType) ? subjectTypes[item.lessonType] : item.lessonType;
+                            responseText += $"Тип: {type} \n";
+                        }
                         responseText += state.User.DisplaySubjectTime ? item.lessonTime + "\n" : "";
                         responseText += state.User.DisplayAuditory ? String.Join("", item.auditory) + "\n" : "";
                         responseText += state.User.DisplayEmployeeName && item.employee.Count > 0 ?

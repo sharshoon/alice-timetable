@@ -17,6 +17,7 @@ namespace Alice_Timetable.Engine.Modifiers
 
         protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo,  State state)
         {
+            state.Step = Step.None;
             return new SimpleResponse()
             {
                 Text = "Приветствую, чего желаете?"
