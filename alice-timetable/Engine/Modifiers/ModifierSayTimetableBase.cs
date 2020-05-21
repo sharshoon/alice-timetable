@@ -18,70 +18,8 @@ namespace alice_timetable.Engine.Modifiers
         protected override abstract bool Check(AliceRequest request, State state);
 
         protected override abstract SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state);
-
-        protected string FormResponse(int week, IList<Schedule> schedules, bool displayAuditory, bool displayEmployeeName, bool displaySubjectTime, bool displaySubjectType)
-        {
-            // Делим на 7, получаем кол-во недель с начала семестра
-            // делаем mod 4 + 1, чтобы получить номер учебной недели
-            //var currentWeek = (Date - DateTime.Parse(dateStart)).Days / 7 % 4 + 1;
-            //var dayNumber = (int)Date.DayOfWeek;
-
-            var responseText = "";
-            // 0 - Sunday
-            if ((int)Date.DayOfWeek != 0 && schedules.Count() > 0)
-            {
-                var weekDays = new Dictionary<string, string>
-                {
-                    ["понедельник"] = "monday",
-                    ["вторник"] = "tuesday",
-                    ["среда"] = "wednesday",
-                    ["четверг"] = "thursday",
-                    ["пятница"] = "friday",
-                    ["суббота"] = "saturday",
-                    ["воскресенье"] = "sunday"
-                };
-                var schedule = schedules.FirstOrDefault(schedule => weekDays[schedule.weekDay.ToLower()] == Date.DayOfWeek.ToString().ToLower());
-                if (schedule == null)
-                {
-                    return "";
-                }
-
-                var number = 1;
-                foreach (var item in schedule.schedule)
-                {
-                    if (item.weekNumber.Contains(week))
-                    {
-                        responseText += $"{number}. '{item.subject}'";
-
-                        responseText += item.numSubgroup != 0 ? $" ({item.numSubgroup} подгруппа) \n" : "\n";
-
-                        if (displaySubjectType)
-                        {
-                            var subjectTypes = new Dictionary<string, string>
-                            {
-                                ["ПЗ"] = "Практическое занятие",
-                                ["ЛР"] = "Лабораторная работа",
-                                ["ЛК"] = "Лекция"
-                            };
-
-                            var type = subjectTypes.ContainsKey(item.lessonType) ? subjectTypes[item.lessonType] : item.lessonType;
-                            responseText += $"Тип: {type} \n";
-                        }
-                        responseText += displaySubjectTime ? item.lessonTime + "\n" : "";
-                        responseText += displayAuditory ? String.Join("", item.auditory) + "\n" : "";
-                        responseText += displayEmployeeName && item.employee.Count > 0 ?
-                            $" {item.employee[0].lastName}  {item.employee[0].firstName} {item.employee[0].middleName} \n"
-                            : "";
-
-                        responseText += "\n";
-                        number++;
-                    }
-                }
-            }
-
-            return responseText;
-        }
-
+        
+        // Пробует преобразовать строку пользователя в конкретную дату
         protected bool DateCheck(IList<string> tokens)
         {
             // расписание сегодня (завтра, послезавтра)
@@ -146,7 +84,7 @@ namespace alice_timetable.Engine.Modifiers
                     {
                         // Если ввели если месяц ввели числом
                         return DateTime.TryParse(String.Join(".", tokens.Skip(tokens.IndexOf(day))), CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.None, out Date);
-                        
+
                     }
                     else
                     {
@@ -156,29 +94,96 @@ namespace alice_timetable.Engine.Modifiers
             }
         }
 
-        protected string FormExamSchedule(ExamSchedule exam, User user)
+        protected string FormResponse(int week, IList<Schedule> schedules, bool displayAuditory, bool displayEmployeeName, bool displaySubjectTime, bool displaySubjectType)
+        {
+            // Делим на 7, получаем кол-во недель с начала семестра
+            // делаем mod 4 + 1, чтобы получить номер учебной недели
+            //var currentWeek = (Date - DateTime.Parse(dateStart)).Days / 7 % 4 + 1;
+            //var dayNumber = (int)Date.DayOfWeek;
+
+            var responseText = "";
+            // 0 - Sunday
+            if ((int)Date.DayOfWeek != 0 && schedules.Count() > 0)
+            {
+                var weekDays = new Dictionary<string, string>
+                {
+                    ["понедельник"] = "monday",
+                    ["вторник"] = "tuesday",
+                    ["среда"] = "wednesday",
+                    ["четверг"] = "thursday",
+                    ["пятница"] = "friday",
+                    ["суббота"] = "saturday",
+                    ["воскресенье"] = "sunday"
+                };
+                var schedule = schedules.FirstOrDefault(schedule => weekDays[schedule.weekDay.ToLower()] == Date.DayOfWeek.ToString().ToLower());
+                if (schedule == null)
+                {
+                    return "";
+                }
+
+                var number = 1;
+                foreach (var item in schedule.schedule)
+                {
+                    if (item.weekNumber.Contains(week))
+                    {
+                        responseText = FormDisplayingParameters(responseText, number, item, displayAuditory, displayEmployeeName, 
+                                                                displaySubjectTime, displaySubjectType);
+                        number++;
+                    }
+                }
+            }
+
+            return responseText;
+        }
+
+        // Формирует строку исходя из настроек пользователя о информации, которой ему нужно предоставлять по поводу каждого занятия
+        protected string FormDisplayingParameters(string responseText, int number, Alice_Timetable.Models.Schedules.Schedule item, 
+                                                  bool displayAuditory, bool displayEmployeeName, bool displaySubjectTime, bool displaySubjectType)
+        {
+            responseText += $"{number}. '{item.subject}'";
+
+            responseText += item.numSubgroup != 0 ? $" ({item.numSubgroup} подгруппа) \n" : "\n";
+
+            if (displaySubjectType)
+            {
+                var subjectTypes = new Dictionary<string, string>
+                {
+                    ["ПЗ"] = "Практическое занятие",
+                    ["ЛР"] = "Лабораторная работа",
+                    ["ЛК"] = "Лекция"
+                };
+
+                var type = subjectTypes.ContainsKey(item.lessonType) ? subjectTypes[item.lessonType] : item.lessonType;
+                responseText += $"Тип: {type} \n";
+            }
+            responseText += displaySubjectTime ? item.lessonTime + "\n" : "";
+            responseText += displayAuditory ? String.Join("", item.auditory) + "\n" : "";
+            responseText += displayEmployeeName && item.employee.Count > 0 ?
+                $" {item.employee[0].lastName}  {item.employee[0].firstName} {item.employee[0].middleName} \n"
+                : "";
+
+            responseText += "\n";
+
+            return responseText;
+        }
+
+        // Формирует расписание экзаменов
+        protected string FormExamSchedule(ExamSchedule exam, User user, int number)
         {
             string responseText = "";
-            int number = 1;
             foreach (var item in exam.schedule)
             {
-                responseText += $"{number}. '{item.subject}'";
+                responseText = FormDisplayingParameters(responseText, number, item, user.DisplayAuditory,
+                                                        user.DisplayEmployeeName, user.DisplaySubjectTime, user.DisplaySubjectType);
+                responseText = responseText.TrimEnd();
+                responseText += "\n" + exam.weekDay + "\n\n"; 
 
-                responseText += item.numSubgroup != 0 ? $" ({item.numSubgroup} подгруппа) \n" : "\n";
-
-                responseText += user.DisplayAuditory ? item.lessonType + "\n" : "";
-                responseText += user.DisplaySubjectTime ? item.lessonTime + "\n" : "";
-                responseText += user.DisplayEmployeeName ? String.Join("", item.auditory) + "\n" : "";
-                responseText += user.DisplaySubjectType && item.employee.Count > 0 ?
-                    $" {item.employee[0].lastName}  {item.employee[0].firstName} {item.employee[0].middleName} \n"
-                    : "";
-
-                responseText += "\n";
                 number++;
             }
             return responseText;
         }
 
+        // Отправляет запрос на сервер с просьбой предоставить расписание
         protected bool TrySendScheduleResponse(ISchedulesRepository schedulesRepo, State state, out BsuirScheduleResponse result, out string errorMessage)
         {
             using var client = new HttpClient();
@@ -210,6 +215,7 @@ namespace alice_timetable.Engine.Modifiers
             return true;
         } 
 
+        // Проверяет входит ли дата, запрошенная пользователем в учебный семестр, если нет, то дополнительно проверяет доступность экзаменов
         protected bool DateBoundariesCheck(State state, BsuirScheduleResponse schedule, out string result, out string errorMessage)
         {
             if (Date > DateTime.Parse(schedule.dateEnd, CultureInfo.GetCultureInfo("ru-RU")) || Date < DateTime.Parse(schedule.dateStart, CultureInfo.GetCultureInfo("ru-RU")))
@@ -227,7 +233,8 @@ namespace alice_timetable.Engine.Modifiers
                     else
                     {
                         errorMessage = "";
-                        result = FormExamSchedule(exam, state.User);
+                        // 1 - с какого номера начинать нумеровать выводимый список экзаменов
+                        result = FormExamSchedule(exam, state.User, 1);
                         return true;
                     }
                 }
@@ -240,5 +247,6 @@ namespace alice_timetable.Engine.Modifiers
             errorMessage = "";
             return true;
         }
+
     }
 }

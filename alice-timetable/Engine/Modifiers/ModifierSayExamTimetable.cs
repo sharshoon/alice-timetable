@@ -33,7 +33,7 @@ namespace alice_timetable.Engine.Modifiers
 
         protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
-            var responseText = GetExamSchedule();
+            var responseText = GetExamSchedule(schedulesRepo, state);
 
             return new SimpleResponse()
             {
@@ -41,10 +41,31 @@ namespace alice_timetable.Engine.Modifiers
             };
         }
 
-        private string GetExamSchedule()
+        private string GetExamSchedule(ISchedulesRepository schedulesRepo, State state)
         {
+            state.Step = Step.None;
+            string errorMessage;
 
-            return "Это расписание экзаменов";
+            var schedule = schedulesRepo.GetSchedule(int.Parse(state.User.Group)).Result;
+            if (schedule == null)
+            {
+                if (!TrySendScheduleResponse(schedulesRepo, state, out schedule, out errorMessage))
+                {
+                    return errorMessage;
+                }
+            }
+
+            var responseText = "";
+
+            var number = 1;
+            foreach(var exams in schedule.examSchedules)
+            {
+                // number - какое по счету мы оглашаем расписание в нашем ответе
+                responseText += FormExamSchedule(exams, state.User, number);
+                number++;
+            }
+
+            return responseText;
         }
     }
 }
