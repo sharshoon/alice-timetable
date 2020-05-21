@@ -21,8 +21,7 @@ namespace alice_timetable.Engine
         {
             var connectionString = configuration.GetConnectionString("SchedulesConnection");
             MongoClient client = new MongoClient(connectionString);
-            var connection = new MongoUrlBuilder(connectionString);
-            database = client.GetDatabase(connection.DatabaseName);
+            database = client.GetDatabase("schedules");
 
             context = dbCtx;
 
@@ -59,12 +58,12 @@ namespace alice_timetable.Engine
 
         public async Task<BsuirScheduleResponse> GetSchedule(int group)
         {
-            return await Schedules.Find(new BsonDocument("Group", group)).FirstOrDefaultAsync();
+            return await Schedules.Find(new BsonDocument("_id", group)).FirstOrDefaultAsync();
         }
 
         public async Task<TeacherScheduleResponse> GetTeacherSchedule(int id)
         {
-            return await TeacherSchedules.Find(new BsonDocument("employee.id", id)).FirstOrDefaultAsync();
+            return await TeacherSchedules.Find(new BsonDocument("_id", id)).FirstOrDefaultAsync();
         }
 
         public async void AddSchedule(BsuirScheduleResponse schedule)

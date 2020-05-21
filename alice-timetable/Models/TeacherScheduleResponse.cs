@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,6 +43,8 @@ namespace Alice_Timetable.Models
 
     public class TeacherScheduleResponse
     {
+        [BsonId]
+        public int EmployeeId { get; set; }
         public Employee employee { get; set; }
         public object studentGroup { get; set; }
         public IList<Schedule> schedules { get; set; }

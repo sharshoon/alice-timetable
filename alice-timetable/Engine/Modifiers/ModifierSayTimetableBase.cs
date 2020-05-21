@@ -17,7 +17,7 @@ namespace alice_timetable.Engine.Modifiers
 
         protected override abstract SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state);
 
-        protected string FormResponse(int week, IList<Schedule> schedules, State state)
+        protected string FormResponse(int week, IList<Schedule> schedules, bool displayAuditory, bool displayEmployeeName, bool displaySubjectTime, bool displaySubjectType)
         {
             // Делим на 7, получаем кол-во недель с начала семестра
             // делаем mod 4 + 1, чтобы получить номер учебной недели
@@ -53,7 +53,7 @@ namespace alice_timetable.Engine.Modifiers
 
                         responseText += item.numSubgroup != 0 ? $" ({item.numSubgroup} подгруппа) \n" : "\n";
 
-                        if (state.User.DisplaySubjectType)
+                        if (displaySubjectType)
                         {
                             var subjectTypes = new Dictionary<string, string>
                             {
@@ -65,9 +65,9 @@ namespace alice_timetable.Engine.Modifiers
                             var type = subjectTypes.ContainsKey(item.lessonType) ? subjectTypes[item.lessonType] : item.lessonType;
                             responseText += $"Тип: {type} \n";
                         }
-                        responseText += state.User.DisplaySubjectTime ? item.lessonTime + "\n" : "";
-                        responseText += state.User.DisplayAuditory ? String.Join("", item.auditory) + "\n" : "";
-                        responseText += state.User.DisplayEmployeeName && item.employee.Count > 0 ?
+                        responseText += displaySubjectTime ? item.lessonTime + "\n" : "";
+                        responseText += displayAuditory ? String.Join("", item.auditory) + "\n" : "";
+                        responseText += displayEmployeeName && item.employee.Count > 0 ?
                             $" {item.employee[0].lastName}  {item.employee[0].firstName} {item.employee[0].middleName} \n"
                             : "";
 
@@ -143,20 +143,8 @@ namespace alice_timetable.Engine.Modifiers
                     if (day != null)
                     {
                         // Если ввели если месяц ввели числом
-                        if (DateTime.TryParse(String.Join(".", tokens.Skip(tokens.IndexOf(day))),CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.None, out Date))
-                        {
-                            //// Чтобы нельзя было посмотреть расписание на предыдущие даты
-                            //if(Date < DateTime.Now.AddDays(-1))
-                            //{
-                            //    return false;
-                            //}
-
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        return DateTime.TryParse(String.Join(".", tokens.Skip(tokens.IndexOf(day))), CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.None, out Date);
+                        
                     }
                     else
                     {

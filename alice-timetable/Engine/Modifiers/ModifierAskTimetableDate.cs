@@ -25,7 +25,8 @@ namespace Alice_Timetable.Engine.Modifiers
                 "пока расписание",
                 "какое расписание",
                 "выведи расписание",
-                "озвучь расписание"
+                "озвучь расписание",
+                "расписание"
             };
 
             var requestString = request.Request.Nlu.Tokens;

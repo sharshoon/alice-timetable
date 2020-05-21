@@ -59,22 +59,36 @@ namespace alice_timetable.Engine.Modifiers
                 if (schedule == null)
                 {
                     using var client = new HttpClient();
-                    var bsuirStringResponse = client
-                        .GetStringAsync($"https://journal.bsuir.by/api/v1/portal/employeeSchedule?employeeId={teacher.id}")
+                    var bsuirResponse = client
+                        .GetAsync($"https://journal.bsuir.by/api/v1/portal/employeeSchedule?employeeId={teacher.id}")
                         .Result;
-                    schedule = JsonConvert.DeserializeObject<TeacherScheduleResponse>(bsuirStringResponse);
-                    schedulesRepo.AddTeacherSchedule(schedule);
+
+                    if (bsuirResponse.IsSuccessStatusCode)
+                    {
+                        var stringResponse = bsuirResponse.Content.ReadAsStringAsync().Result;
+                        schedule = JsonConvert.DeserializeObject<TeacherScheduleResponse>(stringResponse);
+                        schedule.EmployeeId = schedule.employee.id;
+                        schedulesRepo.AddTeacherSchedule(schedule);
+                    }
+                    else
+                    {
+                        return new SimpleResponse()
+                        {
+                            Text = $"Простите, сервер не отвечает, а сохраненного расписания этого преподавателя у меня нет :((("
+                        };
+                    }
                 }
 
                 var mondayThisWeek = DateTime.Today.AddDays(-((int)DateTime.Today.DayOfWeek == 0 ? 6 : (int)DateTime.Today.DayOfWeek - 1));
                 var weeksAdd = (Date - mondayThisWeek).Days / 7;
                 var week = (weeksAdd + SchedulesRepository.CurrentWeek - 1) % 4 + 1;
 
-                var responseText = FormResponse(week, schedule.schedules, state);
+                var responseText = FormResponse(week, schedule.schedules, state.User.DisplayAuditory, false, 
+                                                state.User.DisplaySubjectTime, state.User.DisplaySubjectType);
 
                 responseText = String.IsNullOrWhiteSpace(responseText)
-                    ? "В этот день нет ни одной пары"
-                    : responseText;
+                    ? "В этот день у преподавателя нет ни одной пары"
+                    : responseText + $"{teacher.lastName}  {teacher.firstName} {teacher.middleName} \n";
 
                 return new SimpleResponse()
                 {

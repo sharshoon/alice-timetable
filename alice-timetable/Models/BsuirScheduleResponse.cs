@@ -1,4 +1,5 @@
 ﻿using alice_timetable.Models;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -64,6 +65,7 @@ namespace Alice_Timetable.Models
 
     public class BsuirScheduleResponse
     {
+        [BsonId]
         public int Group { get; set; }
         public string employee { get; set; }
         public StudentGroup studentGroup { get; set; }
