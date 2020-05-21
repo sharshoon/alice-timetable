@@ -20,6 +20,7 @@ using alice_timetable.Engine;
 using alice_timetable.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.File;
+using alice_timetable;
 
 namespace Alice_Timetable
 {

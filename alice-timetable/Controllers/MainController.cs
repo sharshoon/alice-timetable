@@ -8,6 +8,10 @@ using System.IO;
 using System.Threading.Tasks;
 using alice_timetable.Engine;
 using Microsoft.WindowsAzure.Storage;
+using System.Net.Http;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 
 namespace Alice_Timetable.Controllers
 {
@@ -21,6 +25,16 @@ namespace Alice_Timetable.Controllers
         {
             usersRepository = usersRepo;
             schedulesRepository = schedulesRepo;
+
+            //using var bsuir = new HttpClient();
+            //var response = bsuir.GetStringAsync("https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup=851005").Result;
+            //var bsonResponse = BsonSerializer.Deserialize<BsonDocument>(response);
+           
+            //string connectionString = "mongodb://localhost";
+            //var client = new MongoClient(connectionString);
+            //var database = client.GetDatabase("test");
+            //var collection = database.GetCollection<BsonDocument>("people");
+            //collection.InsertOneAsync(bsonResponse).RunSynchronously();
         }
 
         private static State State = new State();

@@ -51,7 +51,7 @@ namespace alice_timetable.Engine.Modifiers
         {
             state.Step = Step.None;
 
-            var schedule = SchedulesRepository.Schedules.FirstOrDefault(item => item.Group == int.Parse(state.User.Group));
+            var schedule = schedulesRepo.GetSchedule(int.Parse(state.User.Group)).Result;
             if (schedule == null)
             {
                 using var client = new HttpClient();

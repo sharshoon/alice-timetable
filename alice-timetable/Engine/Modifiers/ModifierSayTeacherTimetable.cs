@@ -55,7 +55,7 @@ namespace alice_timetable.Engine.Modifiers
 
             if (teacher != null)
             {
-                var schedule = SchedulesRepository.TeacherSchedules.FirstOrDefault(item => item.employee.id == teacher.id);
+                var schedule = schedulesRepo.GetTeacherSchedule(teacher.id).Result;
                 if (schedule == null)
                 {
                     using var client = new HttpClient();

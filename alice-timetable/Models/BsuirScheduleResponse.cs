@@ -10,9 +10,6 @@ namespace Alice_Timetable.Models
 {
     public class StudentGroup
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int studentGroupId { get; set; }
         public string name { get; set; }
         public int facultyId { get; set; }
         public string facultyName { get; set; }
@@ -25,9 +22,6 @@ namespace Alice_Timetable.Models
 
     public class Employee
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int employeeId { get; set; }
         public int id { get; set; }
         public string firstName { get; set; }
         public string lastName { get; set; }
@@ -41,18 +35,12 @@ namespace Alice_Timetable.Models
 
     public class Schedule
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public string weekDay { get; set; }
         public IList<Schedules.Schedule> schedule { get; set; }
     }
 
     public class ExamSchedule
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public string weekDay { get; set; }
         public IList<Schedules.Schedule> schedule { get; set; }
     }
@@ -76,9 +64,6 @@ namespace Alice_Timetable.Models
 
     public class BsuirScheduleResponse
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public int Group { get; set; }
         public string employee { get; set; }
         public StudentGroup studentGroup { get; set; }
@@ -100,9 +85,6 @@ namespace Alice_Timetable.Models.Schedules
 {
     public class Schedule
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public int[] weekNumber { get; set; }
         public string[] studentGroup { get; set; }
         public string[] studentGroupInformation { get; set; }

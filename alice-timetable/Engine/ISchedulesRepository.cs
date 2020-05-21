@@ -9,13 +9,13 @@ namespace alice_timetable.Engine
 {
     public interface ISchedulesRepository
     {
-        static IList<BsuirScheduleResponse> Schedules { get; }
-        static IList<TeacherScheduleResponse> TeacherSchedules { get; }
         static int CurrentWeek { get; }
         IQueryable<Teacher> Teachers { get; }
-        BsuirScheduleResponse AddSchedule(BsuirScheduleResponse schedule);
-        BsuirScheduleResponse DeleteSchedule(int group);
-        TeacherScheduleResponse AddTeacherSchedule(TeacherScheduleResponse schedule);
-        TeacherScheduleResponse DeleteTeacherSchedule(int id);
+        Task<BsuirScheduleResponse> GetSchedule(int group);
+        Task<TeacherScheduleResponse> GetTeacherSchedule(int id);
+        void AddSchedule(BsuirScheduleResponse schedule);
+        void DeleteSchedule(int group);
+        void AddTeacherSchedule(TeacherScheduleResponse schedule);
+        void DeleteTeacherSchedule(int id);
     }
 }
