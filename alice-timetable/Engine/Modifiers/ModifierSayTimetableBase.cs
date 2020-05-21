@@ -2,10 +2,12 @@
 using Alice_Timetable.Engine;
 using Alice_Timetable.Engine.Modifiers;
 using Alice_Timetable.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace alice_timetable.Engine.Modifiers
@@ -152,6 +154,91 @@ namespace alice_timetable.Engine.Modifiers
                     }
                 }
             }
+        }
+
+        protected string FormExamSchedule(ExamSchedule exam, User user)
+        {
+            string responseText = "";
+            int number = 1;
+            foreach (var item in exam.schedule)
+            {
+                responseText += $"{number}. '{item.subject}'";
+
+                responseText += item.numSubgroup != 0 ? $" ({item.numSubgroup} подгруппа) \n" : "\n";
+
+                responseText += user.DisplayAuditory ? item.lessonType + "\n" : "";
+                responseText += user.DisplaySubjectTime ? item.lessonTime + "\n" : "";
+                responseText += user.DisplayEmployeeName ? String.Join("", item.auditory) + "\n" : "";
+                responseText += user.DisplaySubjectType && item.employee.Count > 0 ?
+                    $" {item.employee[0].lastName}  {item.employee[0].firstName} {item.employee[0].middleName} \n"
+                    : "";
+
+                responseText += "\n";
+                number++;
+            }
+            return responseText;
+        }
+
+        protected bool TrySendScheduleResponse(ISchedulesRepository schedulesRepo, State state, out BsuirScheduleResponse result, out string errorMessage)
+        {
+            using var client = new HttpClient();
+            var schedule = new BsuirScheduleResponse();
+            var bsuirResponse = client.GetAsync($"https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup={state.User.Group}").Result;
+            if (bsuirResponse.IsSuccessStatusCode)
+            {
+                var stringResponse = bsuirResponse.Content.ReadAsStringAsync().Result;
+                if (String.IsNullOrWhiteSpace(stringResponse))
+                {
+                    result = null;
+                    errorMessage = "Похоже, что расписания вашей группы нет на сервере, сочувствую :(";
+                    return false;
+                }
+                schedule = JsonConvert.DeserializeObject<BsuirScheduleResponse>(stringResponse);
+                schedule.Group = int.Parse(schedule.studentGroup.name);
+
+                schedulesRepo.AddSchedule(schedule);
+            }
+            else
+            {
+                result = null;
+                errorMessage = $"Простите, сервер не отвечает, а сохраненного расписания этой группы у меня нет :(((";
+                return false;
+            }
+
+            result = schedule;
+            errorMessage = "";
+            return true;
+        } 
+
+        protected bool DateBoundariesCheck(State state, BsuirScheduleResponse schedule, out string result, out string errorMessage)
+        {
+            if (Date > DateTime.Parse(schedule.dateEnd, CultureInfo.GetCultureInfo("ru-RU")) || Date < DateTime.Parse(schedule.dateStart, CultureInfo.GetCultureInfo("ru-RU")))
+            {
+                if (schedule.examSchedules.Count() != 0)
+                {
+                    var exam = schedule.examSchedules.FirstOrDefault(exam => DateTime.Parse(exam.weekDay, CultureInfo.GetCultureInfo("ru-RU")) == Date);
+
+                    if (exam == null)
+                    {
+                        errorMessage = "В этот день нет ни одной пары";
+                        result = "";
+                        return false;
+                    }
+                    else
+                    {
+                        errorMessage = "";
+                        result = FormExamSchedule(exam, state.User);
+                        return true;
+                    }
+                }
+                result = "";
+                errorMessage = $"Вы указали слишком большую, или слишком маленьку дату ({Date.ToString("d", CultureInfo.GetCultureInfo("ru-RU"))}), которая не входит в ваш учебный семестр!";
+                return false;
+            }
+
+            result = "";
+            errorMessage = "";
+            return true;
         }
     }
 }

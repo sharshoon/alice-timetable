@@ -57,75 +57,29 @@ namespace alice_timetable.Engine.Modifiers
             return response;
         }
 
-        private string FormExamSchedule(ExamSchedule exam, User user)
-        {
-            string responseText = "";
-            int number = 1;
-            foreach(var item in exam.schedule)
-            {
-                responseText += $"{number}. '{item.subject}'";
-
-                responseText += item.numSubgroup != 0 ? $" ({item.numSubgroup} подгруппа) \n" : "\n";
-
-                responseText += user.DisplayAuditory ? item.lessonType + "\n" : "";
-                responseText += user.DisplaySubjectTime ? item.lessonTime + "\n" : "";
-                responseText += user.DisplayEmployeeName ? String.Join("", item.auditory) + "\n" : "";
-                responseText += user.DisplaySubjectType && item.employee.Count > 0 ?
-                    $" {item.employee[0].lastName}  {item.employee[0].firstName} {item.employee[0].middleName} \n"
-                    : "";
-
-                responseText += "\n";
-                number++;
-            }
-
-            return responseText;
-        }
 
         private string GetResponse(ISchedulesRepository schedulesRepo, State state)
         {
             state.Step = Step.None;
+            string errorMessage;
 
             var schedule = schedulesRepo.GetSchedule(int.Parse(state.User.Group)).Result;
             if (schedule == null)
             {
-                using var client = new HttpClient();
-
-                var bsuirResponse = client.GetAsync($"https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup={state.User.Group}").Result;
-                if (bsuirResponse.IsSuccessStatusCode)
+                if (!TrySendScheduleResponse(schedulesRepo, state, out schedule, out errorMessage))
                 {
-                    var stringResponse = bsuirResponse.Content.ReadAsStringAsync().Result;
-                    if (String.IsNullOrWhiteSpace(stringResponse))
-                    {
-                        return "Похоже, что расписания вашей группы нет на сервере, сочувствую :(";
-                    }
-                    schedule = JsonConvert.DeserializeObject<BsuirScheduleResponse>(stringResponse);
-                    schedule.Group = int.Parse(schedule.studentGroup.name);
-
-                    schedulesRepo.AddSchedule(schedule);
-                }
-                else
-                {
-                    return $"Простите, сервер не отвечает, а сохраненного расписания этой группы у меня нет :(((";
+                    return errorMessage;
                 }
             }
 
-            if (Date > DateTime.Parse(schedule.dateEnd, CultureInfo.GetCultureInfo("ru-RU")) || Date < DateTime.Parse(schedule.dateStart, CultureInfo.GetCultureInfo("ru-RU")))
+            string result;
+            if (!DateBoundariesCheck(state, schedule, out result, out errorMessage))
             {
-                if (schedule.examSchedules.Count() != 0)
-                {
-                    var exam = schedule.examSchedules.FirstOrDefault(exam => DateTime.Parse(exam.weekDay, CultureInfo.GetCultureInfo("ru-RU")) == Date);
-
-                    if (exam == null)
-                    {
-                        return "В этот день нет ни одной пары";   
-                    }
-                    else
-                    {
-                        return FormExamSchedule(exam, state.User);
-                    }
-                }
-
-                return $"Вы указали слишком большую, или слишком маленьку дату ({Date.ToString("d", CultureInfo.GetCultureInfo("ru-RU"))}), которая не входит в ваш учебный семестр!";
+                return errorMessage;
+            }
+            else if (!String.IsNullOrWhiteSpace(result))
+            {
+                return result;
             }
 
             return GetSchedule(schedule, state);

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace alice_timetable.Engine.Modifiers
 {
-    public class ModifierSayExamTimetable : ModifierBase
+    public class ModifierSayExamTimetable : ModifierSayTimetableBase
     {
         protected override bool Check(AliceRequest request, State state)
         {
@@ -43,6 +43,7 @@ namespace alice_timetable.Engine.Modifiers
 
         private string GetExamSchedule()
         {
+
             return "Это расписание экзаменов";
         }
     }
