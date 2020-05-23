@@ -14,13 +14,29 @@ namespace alice_timetable.Engine.Modifiers.SettingsModifiers
 
         protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
-            state.Step = Step.None;
-            state.User.Group = request.Request.Command;
-
-            return new SimpleResponse()
+            int result;
+            var commandText = request.Request.Command.Replace(" ", "");
+            if (commandText.Length == 6 && int.TryParse(commandText, out result))
             {
-                Text = $"Принято, теперь твоя группа - {state.User.Group}"
-            };
+                state.Step = Step.None;
+                state.User.Group = result.ToString();
+
+                return new SimpleResponse()
+                {
+                    Text = $"Принято, теперь твоя группа - {state.User.Group}"
+                };
+            }
+            else
+            {
+                state.Step = Step.AwaitForNewGroup;
+
+                return new SimpleResponse()
+                {
+                    Text =  $"Хм, {state.User.Name}, мне кажется, что ты ввел неправильную группу." +
+                            $"Группа должна состоять из 6 цифр, к примеру '851005'\n" +
+                            $"Попробуй еще раз!"
+                };
+            }
         }
     }
 }

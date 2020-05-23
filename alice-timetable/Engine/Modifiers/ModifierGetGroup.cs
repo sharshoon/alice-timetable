@@ -19,7 +19,8 @@ namespace alice_timetable.Engine.Modifiers
         protected override SimpleResponse Respond(AliceRequest request, ISchedulesRepository schedulesRepo, State state)
         {
             var result = 0;
-            if (request.Request.Command.Trim().Length == 6 && int.TryParse(request.Request.Command, out result))
+            var commandText = request.Request.Command.Replace(" ", "");
+            if (commandText.Length == 6 && int.TryParse(commandText, out result))
             {
                 state.User.Group = result.ToString();
                 state.Step = Step.AwaitForCustomizationAnswer;
@@ -39,8 +40,9 @@ namespace alice_timetable.Engine.Modifiers
 
                 return new SimpleResponse()
                 {
-                    Text = $"Хм, {state.User.Name}, мне кажется, что ты ввел неправильную группу." +
-                            $"Группа должна состоять из 6 цифр, к примеру '851005'"
+                    Text =  $"Хм, {state.User.Name}, мне кажется, что ты ввел неправильную группу." +
+                            $"Группа должна состоять из 6 цифр, к примеру '851005'\n" +
+                            $"Попробуй еще раз"
                 };
             }
         }
