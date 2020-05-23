@@ -23,6 +23,7 @@ namespace Alice_Timetable.Engine
             new ModifierEnter(),
             new ModifierSayTeacherTimetable(),
             new ModifierSayTimetable(),
+            new ModifierScheduleLeftToday(),
             new ModifierSayExamTimetable(),
             new ModifierAskTimetableDate(),
             new ModifierDisplayAuditory(),

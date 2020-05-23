@@ -105,17 +105,7 @@ namespace alice_timetable.Engine.Modifiers
             // 0 - Sunday
             if ((int)Date.DayOfWeek != 0 && schedules.Count() > 0)
             {
-                var weekDays = new Dictionary<string, string>
-                {
-                    ["понедельник"] = "monday",
-                    ["вторник"] = "tuesday",
-                    ["среда"] = "wednesday",
-                    ["четверг"] = "thursday",
-                    ["пятница"] = "friday",
-                    ["суббота"] = "saturday",
-                    ["воскресенье"] = "sunday"
-                };
-                var schedule = schedules.FirstOrDefault(schedule => weekDays[schedule.weekDay.ToLower()] == Date.DayOfWeek.ToString().ToLower());
+                var schedule = GetScheduleByDayName(schedules);
                 if (schedule == null)
                 {
                     return "";
@@ -134,6 +124,29 @@ namespace alice_timetable.Engine.Modifiers
             }
 
             return responseText;
+        }
+
+        protected Schedule? GetScheduleByDayName(IList<Schedule> schedules)
+        {
+            var weekDays = new Dictionary<string, string>
+            {
+                ["понедельник"] = "monday",
+                ["вторник"] = "tuesday",
+                ["среда"] = "wednesday",
+                ["четверг"] = "thursday",
+                ["пятница"] = "friday",
+                ["суббота"] = "saturday",
+                ["воскресенье"] = "sunday"
+            };
+            var schedule = schedules.FirstOrDefault(schedule => weekDays[schedule.weekDay.ToLower()] == Date.DayOfWeek.ToString().ToLower());
+            if (schedule == null)
+            {
+                return null;
+            }
+            else
+            {
+                return schedule;
+            }
         }
 
         // Формирует строку исходя из настроек пользователя о информации, которой ему нужно предоставлять по поводу каждого занятия
