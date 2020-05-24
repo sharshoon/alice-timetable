@@ -80,6 +80,7 @@ namespace Alice_Timetable.Models
         public string dateEnd { get; set; }
         public string sessionStart { get; set; }
         public string sessionEnd { get; set; }
+        public string lastUpdate { get; set; }
     }
 }
 

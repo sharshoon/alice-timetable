@@ -60,7 +60,14 @@ namespace alice_timetable.Engine
         {
             return await Schedules.Find(new BsonDocument("_id", group)).FirstOrDefaultAsync();
         }
-
+        public async void UpdateSchedule(int group, BsuirScheduleResponse newSchedule)
+        {
+            await Schedules.ReplaceOneAsync(new BsonDocument("_id", group), newSchedule);
+        }
+        public async void UpdateTeacherSchedule(int id, TeacherScheduleResponse newSchedule)
+        {
+            await TeacherSchedules.ReplaceOneAsync(new BsonDocument("_id", id), newSchedule);
+        }
         public async Task<TeacherScheduleResponse> GetTeacherSchedule(int id)
         {
             return await TeacherSchedules.Find(new BsonDocument("_id", id)).FirstOrDefaultAsync();

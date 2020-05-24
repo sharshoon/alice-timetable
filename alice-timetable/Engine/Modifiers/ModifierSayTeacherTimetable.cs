@@ -103,7 +103,7 @@ namespace alice_timetable.Engine.Modifiers
             return response;
         }
 
-        private Teacher? GetTeacherByName(ISchedulesRepository schedulesRepo, List<string> name)
+        private Teacher GetTeacherByName(ISchedulesRepository schedulesRepo, List<string> name)
         {
             if(name.Count() > 0)
             {

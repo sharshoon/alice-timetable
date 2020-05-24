@@ -46,7 +46,7 @@ namespace alice_timetable.Engine.Modifiers
             };
         }
 
-        private string? GetHelper(State state)
+        private string GetHelper(State state)
         {
             var helper = helpers.FirstOrDefault(helper => helper.Steps.Any(step => step == state.Step));
             if (helper != null)

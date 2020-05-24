@@ -126,7 +126,7 @@ namespace alice_timetable.Engine.Modifiers
             return responseText;
         }
 
-        protected Schedule? GetScheduleByDayName(IList<Schedule> schedules)
+        protected Schedule GetScheduleByDayName(IList<Schedule> schedules)
         {
             var weekDays = new Dictionary<string, string>
             {

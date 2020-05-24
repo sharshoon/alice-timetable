@@ -21,6 +21,8 @@ using alice_timetable.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.File;
 using alice_timetable;
+using Hangfire;
+using Hangfire.MemoryStorage;
 
 namespace Alice_Timetable
 {
@@ -38,8 +40,16 @@ namespace Alice_Timetable
             services.AddScoped<ISchedulesRepository, SchedulesRepository>();
             services.AddControllers();
             services.Configure<IISServerOptions>(options => { options.AllowSynchronousIO = true; });
+            services.AddHangfire(config =>
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseDefaultTypeSerializer()
+                .UseMemoryStorage());
+
+            services.AddHangfireServer();
+            services.AddSingleton<IUpdateSchedule, UpdateSchedule>();
         }
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             app.UseRouting();
             app.UseAuthorization();
@@ -47,6 +57,15 @@ namespace Alice_Timetable
             {
                 endpoints.MapControllers();
             });
+
+            app.UseHangfireDashboard();
+            RecurringJob.AddOrUpdate(
+                                        () => serviceProvider
+                                            .GetService<IUpdateSchedule>()
+                                            .UpdateGroupSchedule(serviceProvider
+                                            .GetService<ISchedulesRepository>()) 
+                                        ,Cron.Daily()    
+                                    );
         }
     }
 }

@@ -17,5 +17,7 @@ namespace alice_timetable.Engine
         void DeleteSchedule(int group);
         void AddTeacherSchedule(TeacherScheduleResponse schedule);
         void DeleteTeacherSchedule(int id);
+        void UpdateSchedule(int group, BsuirScheduleResponse newSchedule);
+        void UpdateTeacherSchedule(int id, TeacherScheduleResponse TeacherScheduleResponse);
     }
 }
