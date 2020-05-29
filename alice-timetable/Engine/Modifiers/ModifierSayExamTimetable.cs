@@ -65,7 +65,7 @@ namespace alice_timetable.Engine.Modifiers
                 number++;
             }
 
-            return responseText;
+            return !String.IsNullOrWhiteSpace(responseText) ? responseText : "Расписание экзаменов не найдено :(";
         }
     }
 }
